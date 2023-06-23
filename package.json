@@ -5,13 +5,16 @@
     "email": "gilderic.deruette@kleegroup.com",
     "name": "Gildéric Deruette"
   },
+  "files": [
+    "dist"
+  ],
   "repository": "https://github.com/klee-contrib/ngx-focus-entities",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --no-watch --no-progress",
+    "test": "ng test --no-watch --no-progress --browsers ChromeHeadless",
     "lint": "ng lint"
   },
   "private": false,
@@ -22,8 +25,6 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.1.0",
     "@angular/platform-browser-dynamic": "^16.1.0",
-    "@angular/cli": "~16.1.0",
-    "@angular/compiler-cli": "^16.1.0",
     "@types/jasmine": "~4.3.0",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.0",
