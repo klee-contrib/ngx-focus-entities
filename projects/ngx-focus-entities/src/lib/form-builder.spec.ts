@@ -11,8 +11,8 @@ import {
   ListEntry,
   ObjectEntry,
   RecursiveListEntry,
-  domain,
 } from './types/entity';
+import { domain } from './domain-builder';
 
 export const ProfilDtoEntity: ProfilDtoEntityType = {
   id: {

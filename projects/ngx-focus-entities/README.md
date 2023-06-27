@@ -2,9 +2,24 @@
 
 Librairie permettant de générer des formulaires réactifs Angular à partir d'une représentation type `Focus4` générée avec TopModel.
 
+## Domain
+
+Il est mossible de créer un domaine avec la méthode `domain`. Il est possible d'y définir :
+
+- `validators` : liste des validateurs `ValidatorFn`. Ces validateurs seront ajoutés aux `FormControl` créés avec la méthode `buildForm`
+- `asyncValidators` : liste des validateurs asynchrones `AsyncValidatorFn`
+Ces validateurs seront ajoutés aux `FormControl` créés avec la méthode `buildForm`
+- `htmlType` : type `typescript`, valorisable dans les balises `<input>`
+- `type` : type `ts`, utilisé dans le typage des domaines. Les valeurs possibles sont `'boolean' | 'number' | 'object' | 'string'`
+
+## Build Form
+
+La méthode `buildForm(entity: MaClasseExempleEntity, valeur?: MaClasseExemple)` permet de créer des formulaires `Angular` typés, contenant les validateurs définis dans les domaines, ainsi que le validateur `required` si le champ est obligatoire.
+La méthode peut prendre en 2e paramètre un objet contenant une valeur initiale du `FormGroup`, qui sera répercutée dans la création de l'objet.
+
 ## Utilisation
 
-Si on considère le modèle suivant :
+Si on considère le modèle suivant (généré avec [TopModel](https://github.com/klee-contrib/topmodel)):
 
 ```ts
 export interface UtilisateurDtoEntityType {
@@ -63,6 +78,15 @@ export const UtilisateurDtoEntity: UtilisateurDtoEntityType = {
     entity: AdressDtoEntity,
   },
 };
+```
+
+avec le domaine 
+
+```ts
+const DO_ID = domain({
+  htmlType: 'number',
+  type: 'number',
+});
 ```
 
 Alors il est possible d'utiliser la fonction `buildForm`, qui renverra des objets `FormGroup` Angular typés et peuplés correctement :

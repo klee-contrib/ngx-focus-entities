@@ -1,5 +1,6 @@
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { EntityToForm, EntityToType } from './types/entity';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { EntityToType } from './types/entity';
+import { EntityToForm } from './types/form';
 
 /**
  * Construit un noeud à partir d'une entité, potentiellement de façon récursive.
@@ -50,12 +51,18 @@ export function buildForm<E>(
         abstractControl = buildForm(field.entity, value?.[key]);
         break;
       default:
+        const validators = [...field.domain.validators];
+        if (field.isRequired) {
+          validators.push(Validators.required);
+        }
+
         abstractControl = new FormControl(value?.[key], {
-          validators: field.domain.validators,
+          validators: validators,
           asyncValidators: field.domain.asyncValidators,
           nonNullable: field.isRequired,
         });
     }
+
     formMap[key] = abstractControl;
   }
   // Ajout des propriétés de l'entité, pour y accéder directement dans les services sans utiliser le get()

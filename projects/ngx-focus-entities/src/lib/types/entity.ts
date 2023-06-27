@@ -1,54 +1,6 @@
-import {
-  AsyncValidatorFn,
-  FormArray,
-  FormControl,
-  FormGroup,
-  ValidatorFn,
-} from '@angular/forms';
 
-export function domain<
-  DT extends 'boolean' | 'number' | 'object' | 'string' = any
->(domain: Domain): Domain<DT> {
-  return {
-    htmlType: 'text',
-    ...domain,
-  };
-}
-/** Définition d'un domaine. */
-export interface Domain<
-  DT extends 'boolean' | 'number' | 'object' | 'string' = any
-> {
-  htmlType?:
-    | 'button'
-    | 'checkbox'
-    | 'color'
-    | 'date'
-    | 'datetime-local'
-    | 'email'
-    | 'file'
-    | 'hidden'
-    | 'image'
-    | 'month'
-    | 'number'
-    | 'password'
-    | 'radio'
-    | 'range'
-    | 'reset'
-    | 'search'
-    | 'submit'
-    | 'tel'
-    | 'text'
-    | 'time'
-    | 'url'
-    | 'week';
-  /** Formatteur pour l'affichage du champ en consulation. */
-  displayFormatter?: (value: DomainType<DT> | undefined) => string;
-  /** Type d'un champ du domaine. */
-  type: DT;
-  validators?: ValidatorFn[];
-  asyncValidators?: AsyncValidatorFn[];
-  pattern?: string;
-}
+import { Domain } from './domain';
+
 
 /** Métadonnées d'une entrée de type "field" pour une entité. */
 export interface FieldEntry<
@@ -143,18 +95,3 @@ export interface EntityField<F extends FieldEntry = FieldEntry> {
   /** Valeur. */
   value: FieldEntryType<F> | undefined;
 }
-
-/**
- * @description Transforme une entity en formulaire angular
- * */
-export type EntityToForm<E> = FormGroup<{
-  -readonly [P in keyof E]: E[P] extends FieldEntry<infer DT, infer FT>
-    ? FormControl<FT | undefined>
-    : E[P] extends ObjectEntry<infer OE>
-    ? EntityToForm<OE>
-    : E[P] extends ListEntry<infer LE>
-    ? FormArray<EntityToForm<LE>>
-    : E[P] extends RecursiveListEntry
-    ? FormArray<EntityToForm<E>>
-    : never;
-}>;
