@@ -7,6 +7,22 @@ Librairie permettant de générer des formulaires réactifs Angular à partir d'
 Si on considère le modèle suivant :
 
 ```ts
+export interface UtilisateurDtoEntityType {
+  id: FieldEntry2<typeof DO_ID, number>;
+  parents: RecursiveListEntry;
+  adresss: ListEntry<AdressDtoEntityType>;
+  profil: ObjectEntry<ProfilDtoEntityType>;
+}
+
+export interface ProfilDtoEntityType {
+  id: FieldEntry2<typeof DO_ID, number>;
+}
+
+export interface AdressDtoEntityType {
+  id: FieldEntry2<typeof DO_ID, number>;
+}
+
+
 export const ProfilDtoEntity: ProfilDtoEntityType = {
   id: {
     type: 'field',
@@ -58,5 +74,6 @@ type UtilisateurFormGroup = FormGroup<{
   adresss: FormArray<FormGroup<{ id: FormControl<number | undefined> }>>;
   profil: FormGroup<{ id: FormControl<number | undefined> }>;
 }>;
-  const form:UtilisateurFormGroup = buildForm(UtilisateurDtoEntity);
+
+const form:UtilisateurFormGroup = buildForm(UtilisateurDtoEntity);
 ```
