@@ -1,24 +1,79 @@
-# NgxTopmodelForms
+# NgxFocusEntities
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.0.
+Librairie permettant de générer des formulaires réactifs Angular à partir d'une représentation type `Focus4` générée avec TopModel.
 
-## Code scaffolding
+## Utilisation
 
-Run `ng generate component component-name --project ngx-focus-entities` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ngx-focus-entities`.
-> Note: Don't forget to add `--project ngx-focus-entities` or else it will be added to the default project in your `angular.json` file. 
+Si on considère le modèle suivant :
 
-## Build
+```ts
+export interface UtilisateurDtoEntityType {
+  id: FieldEntry2<typeof DO_ID, number>;
+  parents: RecursiveListEntry;
+  adresss: ListEntry<AdressDtoEntityType>;
+  profil: ObjectEntry<ProfilDtoEntityType>;
+}
 
-Run `ng build ngx-focus-entities` to build the project. The build artifacts will be stored in the `dist/` directory.
+export interface ProfilDtoEntityType {
+  id: FieldEntry2<typeof DO_ID, number>;
+}
 
-## Publishing
+export interface AdressDtoEntityType {
+  id: FieldEntry2<typeof DO_ID, number>;
+}
 
-After building your library with `ng build ngx-focus-entities`, go to the dist folder `cd dist/ngx-focus-entities` and run `npm publish`.
 
-## Running unit tests
+export const ProfilDtoEntity: ProfilDtoEntityType = {
+  id: {
+    type: 'field',
+    name: 'id',
+    domain: DO_ID,
+    isRequired: false,
+    label: 'profil.profil.id',
+  },
+};
 
-Run `ng test ngx-focus-entities` to execute the unit tests via [Karma](https://karma-runner.github.io).
+export const AdressDtoEntity: AdressDtoEntityType = {
+  id: {
+    type: 'field',
+    name: 'id',
+    domain: DO_ID,
+    isRequired: false,
+    label: 'adress.adress.id',
+  },
+};
 
-## Further help
+export const UtilisateurDtoEntity: UtilisateurDtoEntityType = {
+  id: {
+    type: 'field',
+    name: 'id',
+    domain: DO_ID,
+    isRequired: true,
+    label: 'utilisateur.utilisateur.id',
+  },
+  parents: {
+    type: 'recursive-list',
+  },
+  profil: {
+    type: 'object',
+    entity: ProfilDtoEntity,
+  },
+  adresss: {
+    type: 'list',
+    entity: AdressDtoEntity,
+  },
+};
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Alors il est possible d'utiliser la fonction `buildForm`, qui renverra des objets `FormGroup` Angular typés et peuplés correctement :
+
+```ts
+type UtilisateurFormGroup = FormGroup<{
+  id: FormControl<number | undefined>;
+  parents: FormArray<UtilisateurFormGroup>;
+  adresss: FormArray<FormGroup<{ id: FormControl<number | undefined> }>>;
+  profil: FormGroup<{ id: FormControl<number | undefined> }>;
+}>;
+
+const form:UtilisateurFormGroup = buildForm(UtilisateurDtoEntity);
+```
