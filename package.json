@@ -1,6 +1,6 @@
 {
   "name": "ngx-focus-entities",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": {
     "email": "gilderic.deruette@kleegroup.com",
     "name": "Gildéric Deruette"
@@ -8,8 +8,11 @@
   "files": [
     "dist/ngx-focus-entities",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "index.d.ts",
+    "public-api.d.ts"
   ],
+  "license": "LICENSE",
   "repository": "https://github.com/klee-contrib/ngx-focus-entities",
   "scripts": {
     "ng": "ng",
