@@ -1,13 +1,10 @@
 {
   "name": "ngx-focus-entities",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": {
     "email": "gilderic.deruette@kleegroup.com",
     "name": "Gildéric Deruette"
   },
-  "files": [
-    "dist"
-  ],
   "repository": "https://github.com/klee-contrib/ngx-focus-entities",
   "scripts": {
     "ng": "ng",
