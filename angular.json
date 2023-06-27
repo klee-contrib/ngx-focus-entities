@@ -7,7 +7,6 @@
       "projectType": "library",
       "root": "projects/ngx-focus-entities",
       "sourceRoot": "projects/ngx-focus-entities/src",
-      "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
