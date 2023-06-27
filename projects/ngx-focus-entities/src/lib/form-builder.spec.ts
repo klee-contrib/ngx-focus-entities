@@ -1,8 +1,13 @@
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { buildForm } from './form-builder';
 const DO_ID = domain({
   htmlType: 'number',
   type: 'number',
+});
+
+const DO_LIBELLE_100 = domain({
+  type: 'string',
+  validators: [Validators.max(100)],
 });
 
 import {
@@ -21,6 +26,7 @@ export const ProfilDtoEntity: ProfilDtoEntityType = {
     domain: DO_ID,
     isRequired: false,
     label: 'profil.profil.id',
+    defaultValue: 10,
   },
 };
 
@@ -42,6 +48,13 @@ export const UtilisateurDtoEntity: UtilisateurDtoEntityType = {
     isRequired: true,
     label: 'utilisateur.utilisateur.id',
   },
+  nom: {
+    type: 'field',
+    name: 'nom',
+    domain: DO_LIBELLE_100,
+    isRequired: false,
+    label: 'utilisateur.utilisateur.nom',
+  },
   parents: {
     type: 'recursive-list',
   },
@@ -57,6 +70,7 @@ export const UtilisateurDtoEntity: UtilisateurDtoEntityType = {
 
 export interface UtilisateurDtoEntityType {
   id: FieldEntry2<typeof DO_ID, number>;
+  nom: FieldEntry2<typeof DO_LIBELLE_100, string>;
   parents: RecursiveListEntry;
   adresss: ListEntry<AdressDtoEntityType>;
   profil: ObjectEntry<ProfilDtoEntityType>;
@@ -72,6 +86,7 @@ export interface AdressDtoEntityType {
 
 type UtilisateurFormGroup = FormGroup<{
   id: FormControl<number | undefined>;
+  nom: FormControl<string | undefined>;
   parents: FormArray<UtilisateurFormGroup>;
   adresss: FormArray<FormGroup<{ id: FormControl<number | undefined> }>>;
   profil: FormGroup<{ id: FormControl<number | undefined> }>;
@@ -82,17 +97,36 @@ describe('TopModel Form Builder no value', () => {
   it('should be created', () => {
     expect(form).toBeDefined();
   });
-  it('Simple FormControl', () => {
+  it('Simple FormControl number', () => {
     expect(form.controls.id).toBeDefined();
+  });
+  it('Simple FormControl string', () => {
+    expect(form.controls.nom).toBeDefined();
   });
   it('Nested FormControl', () => {
     expect(form.controls.profil?.controls.id).toBeDefined();
+  });
+  it('Nested FormControl default value', () => {
+    expect(form.controls.profil?.controls.id.value).toBe(10);
   });
   it('Simple FormArray', () => {
     expect(form.controls.adresss?.controls).toBeInstanceOf(Array);
   });
   it('Recursive FormArray', () => {
     expect(form.controls.parents?.controls).toBeInstanceOf(Array);
+  });
+});
+
+describe('TopModel Form Builder validator', () => {
+  const form: UtilisateurFormGroup = buildForm(UtilisateurDtoEntity);
+  it('Has Required Validator', () => {
+    expect(form.controls.id.hasValidator(Validators.required)).toBeTrue();
+  });
+  it('Has max Validator max', () => {
+    expect(form.controls.nom.hasValidator(Validators.required)).toBeFalse();
+    expect(
+      form.controls.nom.hasValidator(DO_LIBELLE_100.validators?.[0]!)
+    ).toBeTrue();
   });
 });
 

@@ -56,7 +56,8 @@ export function buildForm<E>(
           validators.push(Validators.required);
         }
 
-        abstractControl = new FormControl(value?.[key], {
+        const defaultValue = value?.[key] ?? field.defaultValue;
+        abstractControl = new FormControl(defaultValue, {
           validators: validators,
           asyncValidators: field.domain.asyncValidators,
           nonNullable: field.isRequired,
