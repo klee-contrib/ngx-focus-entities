@@ -6,14 +6,18 @@ import {
   ValidatorFn,
 } from '@angular/forms';
 
-export function domain<DT extends boolean | number | object | string = any>(domain: Domain): Domain<DT> {
+export function domain<
+  DT extends 'boolean' | 'number' | 'object' | 'string' = any
+>(domain: Domain): Domain<DT> {
   return {
     htmlType: 'text',
     ...domain,
   };
 }
 /** Définition d'un domaine. */
-export interface Domain<DT extends boolean | number | object | string = any> {
+export interface Domain<
+  DT extends 'boolean' | 'number' | 'object' | 'string' = any
+> {
   htmlType?:
     | 'button'
     | 'checkbox'
