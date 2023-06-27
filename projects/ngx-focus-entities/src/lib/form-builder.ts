@@ -51,7 +51,7 @@ export function buildForm<E>(
         abstractControl = buildForm(field.entity, value?.[key]);
         break;
       default:
-        const validators = [...field.domain.validators];
+        const validators = [...(field.domain.validators ?? [])];
         if (field.isRequired) {
           validators.push(Validators.required);
         }
