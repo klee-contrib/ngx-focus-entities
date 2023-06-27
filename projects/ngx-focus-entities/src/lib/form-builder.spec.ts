@@ -1,3 +1,4 @@
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { buildForm } from './form-builder';
 const DO_ID = domain({
   htmlType: 'number',
@@ -69,8 +70,15 @@ export interface AdressDtoEntityType {
   id: FieldEntry2<typeof DO_ID, number>;
 }
 
+type UtilisateurFormGroup = FormGroup<{
+  id: FormControl<number | undefined>;
+  parents: FormArray<UtilisateurFormGroup>;
+  adresss: FormArray<FormGroup<{ id: FormControl<number | undefined> }>>;
+  profil: FormGroup<{ id: FormControl<number | undefined> }>;
+}>;
+
 describe('TopModel Form Builder no value', () => {
-  const form = buildForm(UtilisateurDtoEntity);
+  const form: UtilisateurFormGroup = buildForm(UtilisateurDtoEntity);
   it('should be created', () => {
     expect(form).toBeDefined();
   });
