@@ -24,7 +24,7 @@ export function buildForm<E>(
       ((value as EntityToType<E>[]) ?? []).map((v) =>
         buildForm((entity as E[])[0], v)
       )
-    ) as any;
+    );
   }
   // Cas d'un noeud simple : On parcourt tous les champs de l'entité.
 
