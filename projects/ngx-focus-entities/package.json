@@ -1,6 +1,6 @@
 {
   "name": "ngx-focus-entities",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "peerDependencies": {
     "@angular/forms": "^16.1.0"
   },

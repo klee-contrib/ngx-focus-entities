@@ -7,15 +7,15 @@ import { EntityToForm } from './types/form';
  * @param entity L'entité de base (dans une liste pour un noeud liste).
  */
 export function buildForm<E>(
-  entity: E,
-  value?: EntityToType<E>
-): EntityToForm<E>;
-export function buildForm<E>(
   entity: [E],
   value?: EntityToType<E>[]
 ): FormArray<EntityToForm<E>>;
 export function buildForm<E>(
-  entity: E | E[],
+  entity: E,
+  value?: EntityToType<E>
+): EntityToForm<E>;
+export function buildForm<E>(
+  entity: E | [E],
   value?: EntityToType<E> | EntityToType<E>[]
 ): EntityToForm<E> | FormArray<EntityToForm<E>> {
   // Cas d'un noeud de type liste : on construit une liste observable à laquelle on greffe les métadonnées et la fonction `set`.

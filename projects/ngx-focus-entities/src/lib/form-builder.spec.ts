@@ -93,7 +93,7 @@ type UtilisateurFormGroup = FormGroup<{
 }>;
 describe('Form Group', () => {
   describe('No default value', () => {
-    const form: UtilisateurFormGroup = buildForm(UtilisateurDtoEntity);
+    const form = buildForm(UtilisateurDtoEntity);
     it('should be created', () => {
       expect(form).toBeDefined();
     });
