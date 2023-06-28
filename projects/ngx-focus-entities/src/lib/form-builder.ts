@@ -13,11 +13,11 @@ export function buildForm<E>(
 export function buildForm<E>(
   entity: [E],
   value?: EntityToType<E>[]
-): EntityToForm<E>;
+): FormArray<EntityToForm<E>>;
 export function buildForm<E>(
   entity: E | E[],
   value?: EntityToType<E> | EntityToType<E>[]
-): EntityToForm<E> {
+): EntityToForm<E> | FormArray<EntityToForm<E>> {
   // Cas d'un noeud de type liste : on construit une liste observable à laquelle on greffe les métadonnées et la fonction `set`.
   if (Array.isArray(entity) || Array.isArray(value)) {
     return new FormArray(
