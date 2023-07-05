@@ -1,86 +1,83 @@
 # NgxFocusEntities
 
-Librairie permettant de générer des formulaires réactifs Angular à partir d'une représentation type `Focus4` générée avec TopModel.
+Library for generating reactive Angular forms from a `Focus4` representation generated with [TopModel](https://github.com/klee-contrib/topmodel).
 
 ## Domain
 
-Il est mossible de créer un domaine avec la méthode `domain`. Il est possible d'y définir :
+It is possible to create a domain using the `domain` method. You can define the following:
 
-- `validators` : liste des validateurs `ValidatorFn`. Ces validateurs seront ajoutés aux `FormControl` créés avec la méthode `buildForm`
-- `asyncValidators` : liste des validateurs asynchrones `AsyncValidatorFn`
-Ces validateurs seront ajoutés aux `FormControl` créés avec la méthode `buildForm`
-- `htmlType` : type `typescript`, valorisable dans les balises `<input>`
-- `type` : type `ts`, utilisé dans le typage des domaines. Les valeurs possibles sont `'boolean' | 'number' | 'object' | 'string'`
+- `validators`: a list of `ValidatorFn` validators. These validators will be added to the `FormControl` created with the `buildForm` method.
+- `asyncValidators`: a list of asynchronous `AsyncValidatorFn` validators. These validators will be added to the `FormControl` created with the `buildForm` method.
+- `htmlType`: a `typescript` type that can be used in `<input>` tags.
+- `type`: a `ts` type used for typing the domains. Possible values are `'boolean' | 'number' | 'object' | 'string'`.
 
 ## Build Form
 
-La méthode `buildForm(entity: MaClasseExempleEntity, valeur?: MaClasseExemple)` permet de créer des formulaires `Angular` typés, contenant les validateurs définis dans les domaines, ainsi que le validateur `required` si le champ est obligatoire.
-La méthode peut prendre en 2e paramètre un objet contenant une valeur initiale du `FormGroup`, qui sera répercutée dans la création de l'objet.
+The `buildForm(entity: MyExampleClassEntity, value?: MyExampleClass)` method allows you to create typed `Angular` forms that contain the validators defined in the domains, as well as the `required` validator if the field is mandatory. The method can take a second parameter, an object containing an initial value for the `FormGroup`, which will be reflected in the object's creation.
 
-## Utilisation
+## Usage
 
-Si on considère le modèle suivant (généré avec [TopModel](https://github.com/klee-contrib/topmodel)):
+If we consider the following model (generated with [TopModel](https://github.com/klee-contrib/topmodel)):
 
 ```ts
-export interface UtilisateurDtoEntityType {
+export interface UserDtoEntityType {
   id: FieldEntry2<typeof DO_ID, number>;
   parents: RecursiveListEntry;
-  adresss: ListEntry<AdressDtoEntityType>;
-  profil: ObjectEntry<ProfilDtoEntityType>;
+  addresses: ListEntry<AddressDtoEntityType>;
+  profile: ObjectEntry<ProfileDtoEntityType>;
 }
 
-export interface ProfilDtoEntityType {
+export interface ProfileDtoEntityType {
   id: FieldEntry2<typeof DO_ID, number>;
 }
 
-export interface AdressDtoEntityType {
+export interface AddressDtoEntityType {
   id: FieldEntry2<typeof DO_ID, number>;
 }
 
-
-export const ProfilDtoEntity: ProfilDtoEntityType = {
+export const ProfileDtoEntity: ProfileDtoEntityType = {
   id: {
     type: 'field',
     name: 'id',
     domain: DO_ID,
     isRequired: false,
-    label: 'profil.profil.id',
+    label: 'profile.profile.id',
   },
 };
 
-export const AdressDtoEntity: AdressDtoEntityType = {
+export const AddressDtoEntity: AddressDtoEntityType = {
   id: {
     type: 'field',
     name: 'id',
     domain: DO_ID,
     isRequired: false,
-    label: 'adress.adress.id',
+    label: 'address.address.id',
   },
 };
 
-export const UtilisateurDtoEntity: UtilisateurDtoEntityType = {
+export const UserDtoEntity: UserDtoEntityType = {
   id: {
     type: 'field',
     name: 'id',
     domain: DO_ID,
     isRequired: true,
-    label: 'utilisateur.utilisateur.id',
+    label: 'user.user.id',
   },
   parents: {
     type: 'recursive-list',
   },
-  profil: {
+  profile: {
     type: 'object',
-    entity: ProfilDtoEntity,
+    entity: ProfileDtoEntity,
   },
-  adresss: {
+  addresses: {
     type: 'list',
-    entity: AdressDtoEntity,
+    entity: AddressDtoEntity,
   },
 };
 ```
 
-avec le domaine
+with the domain
 
 ```ts
 const DO_ID = domain({
@@ -89,15 +86,15 @@ const DO_ID = domain({
 });
 ```
 
-Alors il est possible d'utiliser la fonction `buildForm`, qui renverra des objets `FormGroup` Angular typés et peuplés correctement :
+Then it is possible to use the `buildForm` function, which will return correctly typed and populated Angular `FormGroup` objects:
 
 ```ts
-type UtilisateurFormGroup = FormGroup<{
+type UserFormGroup = FormGroup<{
   id: FormControl<number | undefined>;
-  parents: FormArray<UtilisateurFormGroup>;
-  adresss: FormArray<FormGroup<{ id: FormControl<number | undefined> }>>;
-  profil: FormGroup<{ id: FormControl<number | undefined> }>;
+  parents: FormArray<UserFormGroup>;
+  addresses: FormArray<FormGroup<{ id: FormControl<number | undefined> }>>;
+  profile: FormGroup<{ id: FormControl<number | undefined> }>;
 }>;
 
-const form:UtilisateurFormGroup = buildForm(UtilisateurDtoEntity);
+const form: UserFormGroup = buildForm(UserDtoEntity);
 ```
