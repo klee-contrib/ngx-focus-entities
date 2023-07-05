@@ -80,7 +80,7 @@ export const UtilisateurDtoEntity: UtilisateurDtoEntityType = {
 };
 ```
 
-avec le domaine 
+avec le domaine
 
 ```ts
 const DO_ID = domain({
