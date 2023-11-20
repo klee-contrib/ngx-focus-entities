@@ -13,14 +13,16 @@
     "public-api.d.ts"
   ],
   "license": "LICENSE",
-  "repository": "https://github.com/klee-contrib/ngx-focus-entities",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klee-contrib/ngx-focus-entities.git"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --no-watch --no-progress --browsers ChromeHeadless --code-coverage",
-    "lint": "ng lint"
+    "test": "ng test --no-watch --no-progress --browsers ChromeHeadless --code-coverage"
   },
   "private": false,
   "dependencies": {
