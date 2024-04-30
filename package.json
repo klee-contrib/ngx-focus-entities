@@ -1,6 +1,6 @@
 {
   "name": "ngx-focus-entities",
-  "version": "17.0.2",
+  "version": "17.0.3",
   "author": {
     "email": "gilderic.deruette@kleegroup.com",
     "name": "Gildéric Deruette"
@@ -20,7 +20,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build & copyfiles -f -V projects/ngx-focus-entities/schematics/migrations/*.json ./dist/ngx-focus-entities/schematics/migrations",
+    "build": "ng build",
+    "postbuild": "copyfiles -f -V projects/ngx-focus-entities/schematics/migrations/*.json ./dist/ngx-focus-entities/schematics/migrations",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --no-watch --no-progress --browsers ChromeHeadless --code-coverage"
   },
