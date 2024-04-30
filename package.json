@@ -1,6 +1,6 @@
 {
   "name": "ngx-focus-entities",
-  "version": "17.0.0",
+  "version": "17.0.1",
   "author": {
     "email": "gilderic.deruette@kleegroup.com",
     "name": "Gildéric Deruette"
@@ -20,7 +20,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build & copyfiles -f -V projects/ngx-focus-entities/schematics/migrations/*.json ./dist/ngx-focus-entities/schematics/migrations",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --no-watch --no-progress --browsers ChromeHeadless --code-coverage"
   },
@@ -42,6 +42,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "ng-packagr": "^17.0.1",
-    "typescript": "~5.2.2"
+    "typescript": "~5.2.2",
+    "copyfiles": "2.4.1"
   }
 }
