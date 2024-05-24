@@ -1,6 +1,6 @@
 {
   "name": "ngx-focus-entities",
-  "version": "17.0.3",
+  "version": "18.0.0",
   "repository": "https://github.com/klee-contrib/ngx-focus-entities",
   "license": "MIT",
   "author": {
@@ -8,10 +8,10 @@
     "name": "Gildéric Deruette"
   },
   "peerDependencies": {
-    "@angular/forms": "^17.0.3"
+    "@angular/forms": "^18.0.0"
   },
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.6.2"
   },
   "ng-update": {
     "migrations": "./schematics/migrations/migration.json"
