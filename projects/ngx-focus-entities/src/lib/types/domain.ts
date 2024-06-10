@@ -35,5 +35,5 @@ export interface Domain<
   validators?: ValidatorFn[];
   asyncValidators?: AsyncValidatorFn[];
   component?: any;
-  loadComponent?: Promise<any>;
+  loadComponent?: () => Promise<any>;
 }
