@@ -1,5 +1,5 @@
-import { ValidatorFn, AsyncValidatorFn } from "@angular/forms";
-import { DomainType } from "./entity";
+import { AsyncValidatorFn, ValidatorFn } from '@angular/forms';
+import { DomainType } from './entity';
 
 /** Définition d'un domaine. */
 export interface Domain<
@@ -34,5 +34,6 @@ export interface Domain<
   type: DT;
   validators?: ValidatorFn[];
   asyncValidators?: AsyncValidatorFn[];
+  component?: any;
+  loadComponent?: Promise<any>;
 }
-
