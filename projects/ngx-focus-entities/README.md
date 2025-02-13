@@ -2,6 +2,12 @@
 
 Library for generating reactive Angular forms from a `Focus4` representation generated with [TopModel](https://github.com/klee-contrib/topmodel).
 
+Add ngx-focus-entities with command line :
+
+```bash
+ng add ngx-focus-entities
+```
+
 ## Domain
 
 It is possible to create a domain using the `domain` method. You can define the following:
