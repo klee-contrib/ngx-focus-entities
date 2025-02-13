@@ -1,6 +1,6 @@
 {
   "name": "ngx-focus-entities",
-  "version": "19.0.0",
+  "version": "19.1.0",
   "author": {
     "email": "gilderic.deruette@kleegroup.com",
     "name": "Gildéric Deruette"
@@ -12,7 +12,7 @@
     "index.d.ts",
     "public-api.d.ts"
   ],
-  "license": "LICENSE",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/klee-contrib/ngx-focus-entities.git"
@@ -20,20 +20,17 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "postbuild": "copyfiles -f -V projects/ngx-focus-entities/schematics/migrations/*.json ./dist/ngx-focus-entities/schematics/migrations",
+    "build": "cd projects/ngx-focus-entities && npm run build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --no-watch --no-progress --browsers ChromeHeadless --code-coverage"
   },
   "private": false,
   "dependencies": {
-    "@angular/forms": "^19.1.6",
+    "@angular/forms": "^19",
+    "ngx-focus-entities": "19.1.0",
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "@angular/common": "^19.1.6",
-    "@angular/compiler": "^19.1.6",
-    "@angular/core": "^19.1.6",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
