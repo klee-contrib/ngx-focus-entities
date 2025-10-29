@@ -1,87 +1,59 @@
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { buildForm } from './form-builder';
-const DO_ID = domain({
-  htmlType: 'number',
-  type: 'number',
-});
-
-const DO_LIBELLE_100 = domain({
-  type: 'string',
-  validators: [Validators.max(100)],
-});
 
 import {
-  EntityToType,
-  FieldEntry2,
+  e,
+  entity,
+  FieldEntry,
   ListEntry,
   ObjectEntry,
   RecursiveListEntry,
-} from './types/entity';
+} from '@focus4/entities';
+import z from 'zod';
 import { domain } from './domain-builder';
+const DO_ID = domain({
+  schema: z.number().int().positive(),
+});
 
-export const ProfilDtoEntity: ProfilDtoEntityType = {
-  id: {
-    type: 'field',
-    name: 'id',
-    domain: DO_ID,
-    isRequired: false,
-    label: 'profil.profil.id',
-    defaultValue: 10,
-  },
-};
+const DO_LIBELLE_100 = domain({
+  schema: z.string().max(100),
+  validators: [Validators.max(100)],
+});
 
-export const AdressDtoEntity: AdressDtoEntityType = {
-  id: {
-    type: 'field',
-    name: 'id',
-    domain: DO_ID,
-    isRequired: false,
-    label: 'adress.adress.id',
-  },
-};
+export const ProfilDtoEntity = entity({
+  id: e.field(DO_ID, (b) => b.label('profil.profil.id').defaultValue(10)),
+});
 
-export const UtilisateurDtoEntity: UtilisateurDtoEntityType = {
-  id: {
-    type: 'field',
-    name: 'id',
-    domain: DO_ID,
-    isRequired: true,
-    label: 'utilisateur.utilisateur.id',
-  },
-  nom: {
-    type: 'field',
-    name: 'nom',
-    domain: DO_LIBELLE_100,
-    isRequired: false,
-    label: 'utilisateur.utilisateur.nom',
-  },
-  parents: {
-    type: 'recursive-list',
-  },
-  profil: {
-    type: 'object',
-    entity: ProfilDtoEntity,
-  },
-  adresss: {
-    type: 'list',
-    entity: AdressDtoEntity,
-  },
-};
+export const AdressDtoEntity = entity({
+  id: e.field(DO_ID, (b) => b.label('adress.adress.id')),
+});
+
+export const UtilisateurDtoEntity = entity({
+  id: e.field<typeof DO_ID>(DO_ID, (b) =>
+    b.label('utilisateur.utilisateur.id')
+  ),
+  nom: e.field(DO_LIBELLE_100, (b) =>
+    b.label('utilisateur.utilisateur.nom').optional()
+  ),
+  parents: e.recursiveList(),
+  profil: e.object(ProfilDtoEntity),
+  adresss: e.list(AdressDtoEntity),
+});
 
 export interface UtilisateurDtoEntityType {
-  id: FieldEntry2<typeof DO_ID, number>;
-  nom: FieldEntry2<typeof DO_LIBELLE_100, string>;
+  id: FieldEntry<typeof DO_ID>;
+  nom: FieldEntry<typeof DO_LIBELLE_100>;
   parents: RecursiveListEntry;
   adresss: ListEntry<AdressDtoEntityType>;
   profil: ObjectEntry<ProfilDtoEntityType>;
 }
 
 export interface ProfilDtoEntityType {
-  id: FieldEntry2<typeof DO_ID, number>;
+  id: FieldEntry<typeof DO_ID>;
 }
 
 export interface AdressDtoEntityType {
-  id: FieldEntry2<typeof DO_ID, number>;
+  id: FieldEntry<typeof DO_ID>;
 }
 
 type UtilisateurFormGroup = FormGroup<{
@@ -91,6 +63,7 @@ type UtilisateurFormGroup = FormGroup<{
   adresss: FormArray<FormGroup<{ id: FormControl<number | undefined> }>>;
   profil: FormGroup<{ id: FormControl<number | undefined> }>;
 }>;
+
 describe('Form Group', () => {
   describe('No default value', () => {
     const form = buildForm(UtilisateurDtoEntity);
@@ -118,7 +91,7 @@ describe('Form Group', () => {
   });
 
   describe('FormGroup with Value', () => {
-    const value: EntityToType<typeof UtilisateurDtoEntity> = {
+    const value = {
       id: 2,
       profil: { id: 5 },
       adresss: [
@@ -168,20 +141,18 @@ describe('FormArray ', () => {
   });
 
   describe('With default value', () => {
-    const value: EntityToType<typeof UtilisateurDtoEntity>[] = [
-      {
-        id: 2,
-        profil: { id: 5 },
-        adresss: [
-          {
-            id: 6,
-          },
-          { id: 7 },
-        ],
-        parents: [{ id: 1 }],
-      },
-    ];
-    const formArray = buildForm([UtilisateurDtoEntity], value);
+    const value = {
+      id: 2,
+      profil: { id: 5 },
+      adresss: [
+        {
+          id: 6,
+        },
+        { id: 7 },
+      ],
+      parents: [{ id: 1 }],
+    };
+    const formArray = buildForm([UtilisateurDtoEntity], [value]);
     it('should be created', () => {
       expect(formArray).toBeDefined();
     });

@@ -1,6 +1,7 @@
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { EntityToType } from './types/entity';
 import { EntityToForm } from './types/form';
+import { Entity, EntityToType } from '@focus4/entities';
+import { ZodType } from 'zod';
 
 /**
  * Construit un noeud de formulaire à partir d'une entité, potentiellement de façon récursive.
@@ -12,15 +13,15 @@ import { EntityToForm } from './types/form';
  * @param value Valeurs optionnelles à assigner aux contrôles du formulaire.
  * @returns Un FormGroup ou FormArray représentant le formulaire construit à partir de l'entité.
  */
-export function buildForm<E>(
+export function buildForm<E extends Entity>(
   entity: [E],
   value?: EntityToType<E>[]
 ): FormArray<EntityToForm<E>>;
-export function buildForm<E>(
+export function buildForm<E extends Entity>(
   entity: E,
   value?: EntityToType<E>
 ): EntityToForm<E>;
-export function buildForm<E>(
+export function buildForm<E extends Entity>(
   entity: E | [E],
   value?: EntityToType<E> | EntityToType<E>[]
 ): EntityToForm<E> | FormArray<EntityToForm<E>> {
@@ -36,7 +37,7 @@ export function buildForm<E>(
   // Cas d'un noeud simple : On parcourt tous les champs de l'entité.
   const formMap: any = {};
   for (const key in entity) {
-    const field = entity[key] as any;
+    const field = entity[key];
     let abstractControl;
 
     switch (field.type) {
@@ -66,7 +67,8 @@ export function buildForm<E>(
         if (field.isRequired) {
           validators.push(Validators.required);
         }
-
+        const schema = field.domain.schema;
+        validators.push(zodValidator(schema));
         const defaultValue = value?.[key] ?? field.defaultValue;
         abstractControl = new FormControl(defaultValue, {
           validators: validators,
@@ -82,3 +84,10 @@ export function buildForm<E>(
   // Retourne un FormGroup contenant tous les contrôles de formulaire construits.
   return new FormGroup(formMap);
 }
+
+const zodValidator = (schema: ZodType) => {
+  return (control: FormControl) => {
+    const result = schema.safeParse(control.value);
+    return result.success ? null : { formatError: result.error };
+  };
+};

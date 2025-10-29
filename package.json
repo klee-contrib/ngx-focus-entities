@@ -30,7 +30,9 @@
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "@focus4/entities": "12.6",
+    "zod": "4.1.12"
   },
   "devDependencies": {
     "@angular/build": "^20.0.0",

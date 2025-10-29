@@ -12,7 +12,9 @@
     "postbuild": "copyfiles schematics/*/schema.json schematics/*/files/** schematics/collection.json ../../dist/ngx-focus-entities"
   },
   "peerDependencies": {
-    "@angular/forms": "^20"
+    "@angular/forms": "^20",
+    "@focus4/entities": "12.6",
+    "zod": "4.1.12"
   },
   "dependencies": {
     "tslib": "^2.3.0"
