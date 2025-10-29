@@ -12,10 +12,12 @@ ng add ngx-focus-entities
 
 It is possible to create a domain using the `domain` method. You can define the following:
 
+- `schema`: a Zod schema for validation. This schema will be used to validate the field value.
 - `validators`: a list of `ValidatorFn` validators. These validators will be added to the `FormControl` created with the `buildForm` method.
 - `asyncValidators`: a list of asynchronous `AsyncValidatorFn` validators. These validators will be added to the `FormControl` created with the `buildForm` method.
 - `htmlType`: a `typescript` type that can be used in `<input>` tags.
-- `type`: a `ts` type used for typing the domains. Possible values are `'boolean' | 'number' | 'object' | 'string'`.
+- `component`: a custom Angular component to use for the field.
+- `loadComponent`: a function to load a component asynchronously.
 
 ## Build Form
 
@@ -26,69 +28,33 @@ The `buildForm(entity: MyExampleClassEntity, value?: MyExampleClass)` method all
 If we consider the following model (generated with [TopModel](https://github.com/klee-contrib/topmodel)):
 
 ```ts
-export interface UserDtoEntityType {
-  id: FieldEntry2<typeof DO_ID, number>;
-  parents: RecursiveListEntry;
-  addresses: ListEntry<AddressDtoEntityType>;
-  profile: ObjectEntry<ProfileDtoEntityType>;
-}
+import { entity, e } from '@focus4/entities';
+import z from 'zod';
+import { domain } from 'ngx-focus-entities';
 
-export interface ProfileDtoEntityType {
-  id: FieldEntry2<typeof DO_ID, number>;
-}
-
-export interface AddressDtoEntityType {
-  id: FieldEntry2<typeof DO_ID, number>;
-}
-
-export const ProfileDtoEntity: ProfileDtoEntityType = {
-  id: {
-    type: 'field',
-    name: 'id',
-    domain: DO_ID,
-    isRequired: false,
-    label: 'profile.profile.id',
-  },
-};
-
-export const AddressDtoEntity: AddressDtoEntityType = {
-  id: {
-    type: 'field',
-    name: 'id',
-    domain: DO_ID,
-    isRequired: false,
-    label: 'address.address.id',
-  },
-};
-
-export const UserDtoEntity: UserDtoEntityType = {
-  id: {
-    type: 'field',
-    name: 'id',
-    domain: DO_ID,
-    isRequired: true,
-    label: 'user.user.id',
-  },
-  parents: {
-    type: 'recursive-list',
-  },
-  profile: {
-    type: 'object',
-    entity: ProfileDtoEntity,
-  },
-  addresses: {
-    type: 'list',
-    entity: AddressDtoEntity,
-  },
-};
-```
-
-with the domain
-
-```ts
 const DO_ID = domain({
-  htmlType: 'number',
-  type: 'number',
+  schema: z.number().int().positive(),
+});
+
+const DO_LABEL_100 = domain({
+  schema: z.string().max(100),
+  validators: [Validators.maxLength(100)],
+});
+
+export const ProfileDtoEntity = entity({
+  id: e.field(DO_ID, (b) => b.label('profile.profile.id').defaultValue(10)),
+});
+
+export const AddressDtoEntity = entity({
+  id: e.field(DO_ID, (b) => b.label('address.address.id')),
+});
+
+export const UserDtoEntity = entity({
+  id: e.field(DO_ID, (b) => b.label('user.user.id')),
+  name: e.field(DO_LABEL_100, (b) => b.label('user.user.name').optional()),
+  parents: e.recursiveList(),
+  profile: e.object(ProfileDtoEntity),
+  addresses: e.list(AddressDtoEntity),
 });
 ```
 
@@ -97,6 +63,7 @@ Then it is possible to use the `buildForm` function, which will return correctly
 ```ts
 type UserFormGroup = FormGroup<{
   id: FormControl<number | undefined>;
+  name: FormControl<string | undefined>;
   parents: FormArray<UserFormGroup>;
   addresses: FormArray<FormGroup<{ id: FormControl<number | undefined> }>>;
   profile: FormGroup<{ id: FormControl<number | undefined> }>;
