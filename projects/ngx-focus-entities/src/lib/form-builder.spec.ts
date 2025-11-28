@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { buildForm } from './form-builder';
 
@@ -29,12 +30,8 @@ export const AdressDtoEntity = entity({
 });
 
 export const UtilisateurDtoEntity = entity({
-  id: e.field<typeof DO_ID>(DO_ID, (b) =>
-    b.label('utilisateur.utilisateur.id')
-  ),
-  nom: e.field(DO_LIBELLE_100, (b) =>
-    b.label('utilisateur.utilisateur.nom').optional()
-  ),
+  id: e.field<typeof DO_ID>(DO_ID, (b) => b.label('utilisateur.utilisateur.id')),
+  nom: e.field(DO_LIBELLE_100, (b) => b.label('utilisateur.utilisateur.nom').optional()),
   parents: e.recursiveList(),
   profil: e.object(ProfilDtoEntity),
   adresss: e.list(AdressDtoEntity),
@@ -190,12 +187,13 @@ describe('FormArray ', () => {
 describe('FormGroup validator', () => {
   const form: UtilisateurFormGroup = buildForm(UtilisateurDtoEntity);
   it('Has Required Validator', () => {
-    expect(form.controls.id.hasValidator(Validators.required)).toBeTrue();
+    expect(form.controls.id.hasValidator(Validators.required)).toBe(true);
   });
   it('Has max Validator', () => {
-    expect(form.controls.nom.hasValidator(Validators.required)).toBeFalse();
-    expect(
-      form.controls.nom.hasValidator(DO_LIBELLE_100.validators?.[0]!)
-    ).toBeTrue();
+    expect(form.controls.nom.hasValidator(Validators.required)).toBe(false);
+    const maxValidator = DO_LIBELLE_100.validators?.[0];
+    if (maxValidator) {
+      expect(form.controls.nom.hasValidator(maxValidator)).toBe(true);
+    }
   });
 });

@@ -1,53 +1,54 @@
 {
   "name": "ngx-focus-entities",
-  "version": "20.0.0",
+  "version": "21.0.0",
   "author": {
     "email": "gilderic.deruette@kleegroup.com",
     "name": "Gildéric Deruette"
   },
-  "files": [
-    "dist/ngx-focus-entities",
-    "README.md",
-    "LICENSE",
-    "index.d.ts",
-    "public-api.d.ts"
-  ],
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/klee-contrib/ngx-focus-entities.git"
   },
+  "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "cd projects/ngx-focus-entities && npm run build",
+    "build": "ng build && tsc -p tsconfig.schematics.json",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --no-watch --no-progress --browsers ChromeHeadless --code-coverage"
+    "test": "ng test",
+    "test-cli": "ng test "
   },
-  "private": false,
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "packageManager": "npm@11.4.2",
   "dependencies": {
-    "@angular/forms": "^20.0.0",
+    "@angular/common": "^21.0.0",
+    "@angular/compiler": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.0",
+    "@angular/platform-browser": "^21.0.0",
+    "@focus4/entities": "12.6.0",
     "tslib": "^2.3.0"
   },
-  "peerDependencies": {
-    "tslib": "^2.3.0",
-    "@focus4/entities": "12.6",
-    "zod": "4.1.12"
-  },
   "devDependencies": {
-    "@angular/build": "^20.0.0",
-    "@angular/cli": "~20.0.0",
-    "@angular/compiler-cli": "^20.0.0",
-    "@angular/platform-browser-dynamic": "^20.0.0",
-    "@types/jasmine": "~4.3.0",
-    "copyfiles": "2.4.1",
-    "jasmine-core": "~4.6.0",
-    "karma": "~6.4.3",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.1",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
-    "ng-packagr": "^20.0.0",
-    "typescript": "~5.8.3"
+    "@angular/build": "^21.0.1",
+    "@angular/cli": "^21.0.1",
+    "@angular/compiler-cli": "^21.0.0",
+    "@vitest/coverage-v8": "^4.0.14",
+    "jsdom": "^27.1.0",
+    "ng-packagr": "^21.0.0",
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.8"
   }
 }
