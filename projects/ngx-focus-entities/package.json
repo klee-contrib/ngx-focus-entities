@@ -8,7 +8,7 @@
     "name": "Gildéric Deruette"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.schematics.json",
+    "build": "ng build && tsc -p tsconfig.schematics.json",
     "postbuild": "copyfiles schematics/*/schema.json schematics/*/files/** schematics/collection.json ../../dist/ngx-focus-entities/"
   },
   "ng-add": {
