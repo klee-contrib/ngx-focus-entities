@@ -8,21 +8,21 @@
     "name": "Gildéric Deruette"
   },
   "scripts": {
-    "build": "ng build && tsc -p tsconfig.schematics.json",
+    "build": "ng build -c production && tsc -p tsconfig.schematics.json",
     "postbuild": "copyfiles schematics/*/schema.json schematics/*/files/** schematics/collection.json ../../dist/ngx-focus-entities/"
   },
   "ng-add": {
     "save": "devDependencies"
   },
   "peerDependencies": {
-    "@angular/common": "^21.0.0",
-    "@angular/forms": "^21.0.0",
-    "@angular/core": "^21.0.0",
+    "@angular/common": "21.0.0",
+    "@angular/forms": "21.0.0",
+    "@angular/core": "21.0.0",
     "@focus4/entities": "12",
     "zod": "4.1.12"
   },
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "2.3.0"
   },
   "schematics": "./schematics/collection.json",
   "sideEffects": false,
