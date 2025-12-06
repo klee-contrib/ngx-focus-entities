@@ -1,6 +1,6 @@
 {
   "name": "ngx-focus-entities",
-  "version": "21.0.0",
+  "version": "21.0.1",
   "repository": "https://github.com/klee-contrib/ngx-focus-entities",
   "license": "MIT",
   "author": {
@@ -15,11 +15,11 @@
     "save": "devDependencies"
   },
   "peerDependencies": {
-    "@angular/common": "21.0.0",
-    "@angular/forms": "21.0.0",
-    "@angular/core": "21.0.0",
-    "@focus4/entities": "12",
-    "zod": "4.1.12"
+    "@angular/common": ">= 21",
+    "@angular/forms": ">= 21",
+    "@angular/core": ">= 21",
+    "@focus4/entities": ">= 12",
+    "zod": ">= 4 < 5"
   },
   "dependencies": {
     "tslib": "2.3.0"
