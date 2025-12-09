@@ -1,6 +1,6 @@
 {
   "name": "ngx-focus-entities",
-  "version": "21.0.3",
+  "version": "21.0.4",
   "repository": "https://github.com/klee-contrib/ngx-focus-entities",
   "license": "MIT",
   "author": {
@@ -12,7 +12,10 @@
     "postbuild": "copyfiles schematics/*/schema.json schematics/*/files/** schematics/collection.json ../../dist/ngx-focus-entities/"
   },
   "ng-add": {
-    "save": "devDependencies"
+    "save": "dependencies"
+  },
+  "ng-update": {
+    "migrations": "./schematics/migration-collection.json"
   },
   "peerDependencies": {
     "@angular/common": ">= 21",
