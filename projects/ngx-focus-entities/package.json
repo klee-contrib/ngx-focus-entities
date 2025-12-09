@@ -12,7 +12,7 @@
     "postbuild": "copyfiles schematics/*/schema.json schematics/*/files/** schematics/collection.json ../../dist/ngx-focus-entities/"
   },
   "ng-update": {
-    "migrations": "./schematics/migrations.json"
+    "migrations": "./schematics/migrations/migrations.json"
   },
   "peerDependencies": {
     "@angular/common": ">= 21",
