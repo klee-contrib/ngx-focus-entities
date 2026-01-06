@@ -2,11 +2,25 @@
 
 Library for generating reactive Angular forms from a `Focus4` representation generated with [TopModel](https://github.com/klee-contrib/topmodel).
 
+## Installation
+
 Add ngx-focus-entities with command line :
 
 ```bash
 ng add ngx-focus-entities
 ```
+
+## Update
+
+```bash
+ng update ngx-focus-entities
+```
+
+## Requirements
+
+- Angular >= 21
+- @focus4/entities >= 12
+- zod >= 4 < 5
 
 ## Domain
 
@@ -15,9 +29,11 @@ It is possible to create a domain using the `domain` method. You can define the 
 - `schema`: a Zod schema for validation. This schema will be used to validate the field value.
 - `validators`: a list of `ValidatorFn` validators. These validators will be added to the `FormControl` created with the `buildForm` method.
 - `asyncValidators`: a list of asynchronous `AsyncValidatorFn` validators. These validators will be added to the `FormControl` created with the `buildForm` method.
-- `htmlType`: a `typescript` type that can be used in `<input>` tags.
-- `component`: a custom Angular component to use for the field.
-- `loadComponent`: a function to load a component asynchronously.
+- `htmlType`: a TypeScript type that can be used in `<input>` tags (e.g., 'text', 'email', 'number', 'date', etc.).
+- `inputComponent`: a custom Angular component to use for the input field.
+- `loadInputComponent`: a function to load an input component asynchronously.
+- `displayComponent`: a custom Angular component to use for displaying the field.
+- `loadDisplayComponent`: a function to load a display component asynchronously.
 
 ## Build Form
 
@@ -29,6 +45,7 @@ If we consider the following model (generated with [TopModel](https://github.com
 
 ```ts
 import { entity, e } from '@focus4/entities';
+import { Validators } from '@angular/forms';
 import z from 'zod';
 import { domain } from 'ngx-focus-entities';
 
@@ -39,6 +56,7 @@ const DO_ID = domain({
 const DO_LABEL_100 = domain({
   schema: z.string().max(100),
   validators: [Validators.maxLength(100)],
+  htmlType: 'text',
 });
 
 export const ProfileDtoEntity = entity({
@@ -61,6 +79,9 @@ export const UserDtoEntity = entity({
 Then it is possible to use the `buildForm` function, which will return correctly typed and populated Angular `FormGroup` objects:
 
 ```ts
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { buildForm } from 'ngx-focus-entities';
+
 type UserFormGroup = FormGroup<{
   id: FormControl<number | undefined>;
   name: FormControl<string | undefined>;
@@ -69,5 +90,26 @@ type UserFormGroup = FormGroup<{
   profile: FormGroup<{ id: FormControl<number | undefined> }>;
 }>;
 
+// Create an empty form
 const form: UserFormGroup = buildForm(UserDtoEntity);
+
+// Create a form with initial values
+const formWithValues: UserFormGroup = buildForm(UserDtoEntity, {
+  id: 1,
+  name: 'John Doe',
+  parents: [],
+  addresses: [{ id: 1 }],
+  profile: { id: 10 },
+});
 ```
+
+## Features
+
+- Automatic generation of reactive Angular forms from Focus4 entities
+- Zod schema validation support
+- Custom component support (input and display components)
+- Complete TypeScript types with automatic inference
+- Support for nested objects, lists, and recursive lists
+- Required field validation
+- Synchronous and asynchronous validators
+- Compatible with Angular 21

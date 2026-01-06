@@ -22,4 +22,4 @@ ng update ngx-focus-entities
 - Support des schémas Zod pour la validation
 - Support des composants personnalisés
 - Types TypeScript complets et inférés automatiquement
-- Compatible avec Angular 20
+- Compatible avec Angular 21

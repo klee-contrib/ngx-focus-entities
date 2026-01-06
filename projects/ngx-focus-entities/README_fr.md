@@ -1,18 +1,39 @@
 # NgxFocusEntities
 
-Librairie permettant de générer des formulaires réactifs Angular à partir d'une représentation type `Focus4` générée avec TopModel.
+Librairie permettant de générer des formulaires réactifs Angular à partir d'une représentation type `Focus4` générée avec [TopModel](https://github.com/klee-contrib/topmodel).
+
+## Installation
+
+Ajouter ngx-focus-entities avec la ligne de commande :
+
+```bash
+ng add ngx-focus-entities
+```
+
+## Mise à jour
+
+```bash
+ng update ngx-focus-entities
+```
+
+## Prérequis
+
+- Angular >= 21
+- @focus4/entities >= 12
+- zod >= 4 < 5
 
 ## Domain
 
 Il est possible de créer un domaine avec la méthode `domain`. Il est possible d'y définir :
 
 - `schema` : un schéma Zod pour la validation. Ce schéma sera utilisé pour valider la valeur du champ.
-- `validators` : liste des validateurs `ValidatorFn`. Ces validateurs seront ajoutés aux `FormControl` créés avec la méthode `buildForm`
-- `asyncValidators` : liste des validateurs asynchrones `AsyncValidatorFn`
-Ces validateurs seront ajoutés aux `FormControl` créés avec la méthode `buildForm`
-- `htmlType` : type `typescript`, valorisable dans les balises `<input>`
-- `component` : un composant Angular personnalisé à utiliser pour le champ.
-- `loadComponent` : une fonction pour charger un composant de manière asynchrone.
+- `validators` : liste des validateurs `ValidatorFn`. Ces validateurs seront ajoutés aux `FormControl` créés avec la méthode `buildForm`.
+- `asyncValidators` : liste des validateurs asynchrones `AsyncValidatorFn`. Ces validateurs seront ajoutés aux `FormControl` créés avec la méthode `buildForm`.
+- `htmlType` : un type d'input html, valorisable dans les balises `<input>` (par exemple, 'text', 'email', 'number', 'date', etc.).
+- `inputComponent` : un composant Angular personnalisé à utiliser pour le champ de saisie.
+- `loadInputComponent` : une fonction pour charger un composant de saisie de manière asynchrone.
+- `displayComponent` : un composant Angular personnalisé à utiliser pour l'affichage du champ.
+- `loadDisplayComponent` : une fonction pour charger un composant d'affichage de manière asynchrone.
 
 ## Build Form
 
@@ -25,6 +46,7 @@ Si on considère le modèle suivant (généré avec [TopModel](https://github.co
 
 ```ts
 import { entity, e } from '@focus4/entities';
+import { Validators } from '@angular/forms';
 import z from 'zod';
 import { domain } from 'ngx-focus-entities';
 
@@ -35,6 +57,7 @@ const DO_ID = domain({
 const DO_LIBELLE_100 = domain({
   schema: z.string().max(100),
   validators: [Validators.maxLength(100)],
+  htmlType: 'text',
 });
 
 export const ProfilDtoEntity = entity({
@@ -57,6 +80,9 @@ export const UtilisateurDtoEntity = entity({
 Alors il est possible d'utiliser la fonction `buildForm`, qui renverra des objets `FormGroup` Angular typés et peuplés correctement :
 
 ```ts
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { buildForm } from 'ngx-focus-entities';
+
 type UtilisateurFormGroup = FormGroup<{
   id: FormControl<number | undefined>;
   nom: FormControl<string | undefined>;
@@ -65,5 +91,26 @@ type UtilisateurFormGroup = FormGroup<{
   profil: FormGroup<{ id: FormControl<number | undefined> }>;
 }>;
 
+// Créer un formulaire vide
 const form: UtilisateurFormGroup = buildForm(UtilisateurDtoEntity);
+
+// Créer un formulaire avec des valeurs initiales
+const formWithValues: UtilisateurFormGroup = buildForm(UtilisateurDtoEntity, {
+  id: 1,
+  nom: 'Jean Dupont',
+  parents: [],
+  adresss: [{ id: 1 }],
+  profil: { id: 10 },
+});
 ```
+
+## Fonctionnalités
+
+- Génération automatique de formulaires Angular réactifs à partir d'entités Focus4
+- Support des schémas Zod pour la validation
+- Support des composants personnalisés (composants de saisie et d'affichage)
+- Types TypeScript complets avec inférence automatique
+- Support des objets imbriqués, listes et listes récursives
+- Validation des champs obligatoires
+- Validateurs synchrones et asynchrones
+- Compatible avec Angular 21
