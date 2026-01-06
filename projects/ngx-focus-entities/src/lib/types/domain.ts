@@ -60,26 +60,26 @@ declare global {
      * Composant personnalisé pour le champ.
      * Ce champ permet de spécifier un composant Angular personnalisé à utiliser pour le champ du formulaire.
      */
-    inputComponent?: Type<any> | null;
+    inputComponent?: Type<any>;
 
     /**
      * Fonction pour charger un composant de manière asynchrone.
      * Cette fonction retourne une promesse qui résout en un composant Angular.
      * Elle est utilisée pour charger le composant d'input de manière dynamique.
      */
-    loadInputComponent?: () => Promise<Type<any> | null>;
+    loadInputComponent?: () => Promise<Type<any>>;
 
     /**
      * Composant personnalisé pour le champ.
      * Ce champ permet de spécifier un composant Angular personnalisé à utiliser pour le champ du formulaire.
      */
-    displayComponent?: Type<any> | null;
+    displayComponent?: Type<any>;
 
     /**
      * Fonction pour charger un composant de manière asynchrone.
      * Cette fonction retourne une promesse qui résout en un composant Angular.
      * Elle est utilisée pour charger le composant d'affichage de manière dynamique.
      */
-    loadDisplayComponent?: () => Promise<Type<any> | null>;
+    loadDisplayComponent?: () => Promise<Type<any>>;
   }
 }
