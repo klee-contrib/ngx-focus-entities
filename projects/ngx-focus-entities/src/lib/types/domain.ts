@@ -1,3 +1,4 @@
+import { Type } from '@angular/core';
 import { AsyncValidatorFn, ValidatorFn } from '@angular/forms';
 import { output, ZodType } from 'zod';
 /**
@@ -59,26 +60,26 @@ declare global {
      * Composant personnalisé pour le champ.
      * Ce champ permet de spécifier un composant Angular personnalisé à utiliser pour le champ du formulaire.
      */
-    inputComponent?: new () => any;
+    inputComponent?: Type<any> | null;
 
     /**
      * Fonction pour charger un composant de manière asynchrone.
      * Cette fonction retourne une promesse qui résout en un composant Angular.
      * Elle est utilisée pour charger le composant d'input de manière dynamique.
      */
-    loadInputComponent?: () => Promise<new () => any>;
+    loadInputComponent?: () => Promise<Type<any> | null>;
 
     /**
      * Composant personnalisé pour le champ.
      * Ce champ permet de spécifier un composant Angular personnalisé à utiliser pour le champ du formulaire.
      */
-    displayComponent?: new () => any;
+    displayComponent?: Type<any> | null;
 
     /**
      * Fonction pour charger un composant de manière asynchrone.
      * Cette fonction retourne une promesse qui résout en un composant Angular.
      * Elle est utilisée pour charger le composant d'affichage de manière dynamique.
      */
-    loadDisplayComponent?: () => Promise<new () => any>;
+    loadDisplayComponent?: () => Promise<Type<any> | null>;
   }
 }
