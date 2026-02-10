@@ -7,7 +7,9 @@ import { ZodType } from 'zod';
  * @param domain - L'objet domaine à partir duquel créer ou modifier le domaine.
  * @returns Un nouvel objet `Domain` avec le type de données spécifié et un type HTML par défaut défini sur 'text'.
  */
-export function domain<DT extends ZodType>(domain: Domain<DT>): Domain<DT> {
+export function domain<DT extends ZodType, InputComponent = any, DisplayComponent = any>(
+  domain: Domain<DT, InputComponent, DisplayComponent>,
+): Domain<DT, InputComponent, DisplayComponent> {
   return {
     /**
      * Utilise l'opérateur de décomposition (spread operator) pour inclure toutes les propriétés de l'objet `domain` passé en argument.

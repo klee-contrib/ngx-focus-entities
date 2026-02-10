@@ -1,13 +1,13 @@
 import { Type } from '@angular/core';
 import { AsyncValidatorFn, ValidatorFn } from '@angular/forms';
-import { output, ZodType } from 'zod';
+import { ZodType } from 'zod';
 /**
  * Définition d'un domaine.
  * Cette interface décrit la structure d'un domaine, qui peut être utilisé pour définir
  * les propriétés et comportements d'un champ dans un formulaire.
  */
 declare global {
-  interface Domain<S extends ZodType> {
+  interface Domain<S extends ZodType, InputComponent = any, DisplayComponent = any> {
     /**
      * Type HTML du champ.
      * Ce champ spécifie le type d'élément HTML à utiliser pour le champ du formulaire.
@@ -60,26 +60,26 @@ declare global {
      * Composant personnalisé pour le champ.
      * Ce champ permet de spécifier un composant Angular personnalisé à utiliser pour le champ du formulaire.
      */
-    inputComponent?: Type<any>;
+    inputComponent?: Type<InputComponent>;
 
     /**
      * Fonction pour charger un composant de manière asynchrone.
      * Cette fonction retourne une promesse qui résout en un composant Angular.
      * Elle est utilisée pour charger le composant d'input de manière dynamique.
      */
-    loadInputComponent?: () => Promise<Type<any>>;
+    loadInputComponent?: () => Promise<Type<InputComponent>>;
 
     /**
      * Composant personnalisé pour le champ.
      * Ce champ permet de spécifier un composant Angular personnalisé à utiliser pour le champ du formulaire.
      */
-    displayComponent?: Type<any>;
+    displayComponent?: Type<DisplayComponent>;
 
     /**
      * Fonction pour charger un composant de manière asynchrone.
      * Cette fonction retourne une promesse qui résout en un composant Angular.
      * Elle est utilisée pour charger le composant d'affichage de manière dynamique.
      */
-    loadDisplayComponent?: () => Promise<Type<any>>;
+    loadDisplayComponent?: () => Promise<Type<DisplayComponent>>;
   }
 }

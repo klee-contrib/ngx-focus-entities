@@ -15,22 +15,17 @@ import { ZodType } from 'zod';
  */
 export function buildForm<E extends Entity>(
   entity: [E],
-  value?: EntityToType<E>[]
+  value?: EntityToType<E>[],
 ): FormArray<EntityToForm<E>>;
-export function buildForm<E extends Entity>(
-  entity: E,
-  value?: EntityToType<E>
-): EntityToForm<E>;
+export function buildForm<E extends Entity>(entity: E, value?: EntityToType<E>): EntityToForm<E>;
 export function buildForm<E extends Entity>(
   entity: E | [E],
-  value?: EntityToType<E> | EntityToType<E>[]
+  value?: EntityToType<E> | EntityToType<E>[],
 ): EntityToForm<E> | FormArray<EntityToForm<E>> {
   // Cas d'un noeud de type liste : on construit une liste observable à laquelle on greffe les métadonnées et la fonction `set`.
   if (Array.isArray(entity) || Array.isArray(value)) {
     return new FormArray(
-      ((value as EntityToType<E>[]) ?? []).map((v) =>
-        buildForm((entity as E[])[0], v)
-      )
+      ((value as EntityToType<E>[]) ?? []).map((v) => buildForm((entity as E[])[0], v)),
     );
   }
 
@@ -44,24 +39,20 @@ export function buildForm<E extends Entity>(
       case 'list':
         // Si le champ est de type liste, crée un FormArray pour chaque élément de la liste.
         abstractControl = new FormArray(
-          ((value?.[key] as any) ?? []).map((v: any) =>
-            buildForm(field.entity, v)
-          )
+          ((value?.[key] as any) ?? []).map((v: any) => buildForm(field.entity, v)),
         );
         break;
       case 'recursive-list':
         // Si le champ est de type liste récursive, crée un FormArray pour l'entité elle-même.
         abstractControl = new FormArray(
-          ((value && (value[key] as any)) ?? []).map((v: any) =>
-            buildForm(entity, v)
-          )
+          ((value && (value[key] as any)) ?? []).map((v: any) => buildForm(entity, v)),
         );
         break;
       case 'object':
         // Si le champ est de type objet, construit récursivement un formulaire pour l'objet imbriqué.
         abstractControl = buildForm(field.entity, value?.[key]);
         break;
-      default:
+      default: {
         // Pour les autres types de champs, crée un FormControl avec les validateurs appropriés.
         const validators = [...(field.domain.validators ?? [])];
         if (field.isRequired) {
@@ -75,6 +66,7 @@ export function buildForm<E extends Entity>(
           asyncValidators: field.domain.asyncValidators,
           nonNullable: field.isRequired,
         });
+      }
     }
 
     // Ajoute le contrôle de formulaire au map du formulaire.
