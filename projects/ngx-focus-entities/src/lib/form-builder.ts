@@ -79,7 +79,11 @@ export function buildForm<E extends Entity>(
 
 const zodValidator = (schema: ZodType) => {
   return (control: FormControl) => {
-    const result = schema.safeParse(control.value);
-    return result.success ? null : { formatError: result.error };
+    if (control.value) {
+      const result = schema.safeParse(control.value);
+      return result.success ? null : { formatError: result.error };
+    }
+
+    return null;
   };
 };
