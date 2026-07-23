@@ -1,12 +1,11 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { form } from '@angular/forms/signals';
-import { e, entity } from '@focus4/entities';
+import { e, entity, EntityToPartialType } from '@focus4/entities';
 import { describe, expect, it } from 'vitest';
 import z from 'zod';
 import { domain } from './domain-builder';
 import { buildModel, buildSchema, buildSignalForm } from './signal-form-builder';
-import { EntityToModel, EntityToSignalForm } from './types/signal-form';
 
 const DO_ID = domain(z.number().int().positive());
 

@@ -1,6 +1,6 @@
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { EntityToForm } from './types/form';
-import { Entity, EntityToType } from '@focus4/entities';
+import { Entity, EntityToPartialType, EntityToType } from '@focus4/entities';
 import { ZodType } from 'zod';
 
 /**
@@ -15,17 +15,20 @@ import { ZodType } from 'zod';
  */
 export function buildForm<E extends Entity>(
   entity: [E],
-  value?: EntityToType<E>[],
+  value?: EntityToPartialType<E>[],
 ): FormArray<EntityToForm<E>>;
-export function buildForm<E extends Entity>(entity: E, value?: EntityToType<E>): EntityToForm<E>;
+export function buildForm<E extends Entity>(
+  entity: E,
+  value?: EntityToPartialType<E>,
+): EntityToForm<E>;
 export function buildForm<E extends Entity>(
   entity: E | [E],
-  value?: EntityToType<E> | EntityToType<E>[],
+  value?: EntityToPartialType<E> | EntityToPartialType<E>[],
 ): EntityToForm<E> | FormArray<EntityToForm<E>> {
   // Cas d'un noeud de type liste : on construit une liste observable à laquelle on greffe les métadonnées et la fonction `set`.
   if (Array.isArray(entity) || Array.isArray(value)) {
     return new FormArray(
-      ((value as EntityToType<E>[]) ?? []).map((v) => buildForm((entity as E[])[0], v)),
+      ((value as EntityToPartialType<E>[]) ?? []).map((v) => buildForm((entity as E[])[0], v)),
     );
   }
 
@@ -49,7 +52,7 @@ export function buildForm<E extends Entity>(
         break;
       case 'object':
         // Si le champ est de type objet, construit récursivement un formulaire pour l'objet imbriqué.
-        abstractControl = buildForm(field.entity, value?.[key]);
+        abstractControl = buildForm(field.entity, (value as any)?.[key]);
         break;
       default: {
         // Pour les autres types de champs, crée un FormControl avec les validateurs appropriés.
@@ -59,7 +62,7 @@ export function buildForm<E extends Entity>(
         }
         const schema = field.domain.schema;
         validators.push(zodValidator(schema));
-        const defaultValue = value?.[key] ?? field.defaultValue;
+        const defaultValue = (value as any)?.[key] ?? field.defaultValue;
         abstractControl = new FormControl(defaultValue, {
           validators: validators,
           asyncValidators: field.domain.asyncValidators,

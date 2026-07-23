@@ -12,7 +12,13 @@ import {
   SchemaOrSchemaFn,
   validate,
 } from '@angular/forms/signals';
-import { Entity, EntityToType, FieldEntry, isStringSchema } from '@focus4/entities';
+import {
+  Entity,
+  EntityToPartialType,
+  EntityToType,
+  FieldEntry,
+  isStringSchema,
+} from '@focus4/entities';
 import { ZodType } from 'zod';
 import './types/domain';
 import { EntityToModel } from './types/signal-form';
@@ -31,12 +37,15 @@ import { EntityToModel } from './types/signal-form';
  */
 export function buildModel<E extends Entity>(
   entity: [E],
-  value?: EntityToType<E>[],
+  value?: EntityToPartialType<E>[],
 ): EntityToModel<E>[];
-export function buildModel<E extends Entity>(entity: E, value?: EntityToType<E>): EntityToModel<E>;
+export function buildModel<E extends Entity>(
+  entity: E,
+  value?: EntityToPartialType<E>,
+): EntityToModel<E>;
 export function buildModel<E extends Entity>(
   entity: E | [E],
-  value?: EntityToType<E> | EntityToType<E>[],
+  value?: EntityToPartialType<E> | EntityToPartialType<E>[],
 ): EntityToModel<E> | EntityToModel<E>[] {
   // Cas d'un noeud de type liste : on construit un tableau à partir des valeurs fournies.
   if (Array.isArray(entity) || Array.isArray(value)) {
@@ -59,7 +68,7 @@ export function buildModel<E extends Entity>(
         break;
       case 'object':
         // Objet imbriqué : on construit récursivement le modèle.
-        model[key] = buildModel(field.entity, value?.[key]);
+        model[key] = buildModel(field.entity, (value as any)?.[key]);
         break;
       default:
         // Champ simple : valeur fournie, sinon valeur par défaut du domaine, sinon `null`.
@@ -139,29 +148,29 @@ export function buildSchema<E extends Entity>(entity: E): Schema<EntityToModel<E
  */
 export function buildSignalForm<E extends Entity>(
   entity: [E],
-  value?: EntityToType<E>[],
+  value?: EntityToPartialType<E>[],
   options?: FormOptions<EntityToModel<E>[]>,
 ): FieldTree<EntityToModel<E>[]>;
 export function buildSignalForm<E extends Entity>(
   entity: E,
-  value?: EntityToType<E>,
+  value?: EntityToPartialType<E>,
   options?: FormOptions<EntityToModel<E>>,
 ): FieldTree<EntityToModel<E>>;
 export function buildSignalForm<E extends Entity>(
   entity: E | [E],
-  value?: EntityToType<E> | EntityToType<E>[],
+  value?: EntityToPartialType<E> | EntityToPartialType<E>[],
   options?: FormOptions<any>,
 ): FieldTree<EntityToModel<E>> | FieldTree<EntityToModel<E>[]> {
   // Cas d'un formulaire de type liste : le modèle est un tableau et le schéma s'applique à chaque élément.
   if (Array.isArray(entity)) {
-    const model = signal(buildModel(entity, value as EntityToType<E>[]));
+    const model = signal(buildModel(entity, value as EntityToPartialType<E>[]));
     const itemSchema = buildSchema(entity[0]);
     const arraySchema: SchemaFn<EntityToModel<E>[]> = (path: any) =>
       applyEach(path, itemSchema as any);
     return buildFormFrom(model, arraySchema, options);
   }
 
-  const model = signal(buildModel(entity, value as EntityToType<E>));
+  const model = signal(buildModel(entity, value as EntityToPartialType<E>));
   return buildFormFrom(model, buildSchema(entity), options);
 }
 
