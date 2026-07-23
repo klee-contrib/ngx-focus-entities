@@ -32,9 +32,8 @@ export function buildForm<E extends Entity>(
   // Cas d'un noeud simple : On parcourt tous les champs de l'entité.
   const formMap: any = {};
   for (const key in entity) {
-    const field = entity[key];
+    const field: any = entity[key];
     let abstractControl;
-
     switch (field.type) {
       case 'list':
         // Si le champ est de type liste, crée un FormArray pour chaque élément de la liste.

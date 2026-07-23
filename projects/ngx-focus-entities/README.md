@@ -18,7 +18,7 @@ ng update ngx-focus-entities
 
 ## Requirements
 
-- Angular >= 21
+- Angular >= 22
 - @focus4/entities >= 12
 - zod >= 4 < 5
 
@@ -34,6 +34,7 @@ It is possible to create a domain using the `domain` method. You can define the 
 - `loadInputComponent`: a function to load an input component asynchronously.
 - `displayComponent`: a custom Angular component to use for displaying the field.
 - `loadDisplayComponent`: a function to load a display component asynchronously.
+- `signalRules`: additional signal form rules (`@angular/forms/signals`) applied to the field when building a signal form with `buildSignalForm`/`buildSchema`. This is a `Schema` or schema function that lets you declare native signal-form rules at the domain level (`min`, `max`, `pattern`, `validate`, `disabled`, etc.), on top of the `zod` schema. It is the signal-forms counterpart of `validators`.
 
 ## Build Form
 
@@ -103,13 +104,63 @@ const formWithValues: UserFormGroup = buildForm(UserDtoEntity, {
 });
 ```
 
+## Signal Forms
+
+In addition to the reactive `FormGroup`/`FormArray` produced by `buildForm`, the library can
+instantiate [Angular Signal Forms](https://angular.dev/guide/forms/signals) (`@angular/forms/signals`)
+from the same Focus4 entities and domains.
+
+Three utilities are provided:
+
+- `buildModel(entity, value?)`: builds the raw data object (the "model") from an entity, applying the
+  domains' default values. Every key is present and no field is `undefined` (an empty field is
+  `null`), which is required for the `FieldTree` to expose every sub-field.
+- `buildSchema(entity)`: builds a signal form `Schema` from an entity. For each field it binds the
+  `required` validator (when the field is mandatory), the domain's `zod` schema validation, and the
+  domain's optional `signalRules`. Nested objects, lists, and recursive lists are handled
+  recursively (via `apply`/`applyEach`).
+- `buildSignalForm(entity, value?, options?)`: combines `buildModel` and `buildSchema` into a single
+  call to `form`, and returns a `FieldTree`. Must be called within an injection context, or provide
+  an `injector` through the `options`.
+
+```ts
+import { Component, signal } from '@angular/core';
+import { form } from '@angular/forms/signals';
+import { buildModel, buildSchema, buildSignalForm } from 'ngx-focus-entities';
+import { UserDtoEntity } from './user';
+
+@Component({
+  /* ... */
+})
+export class UserComponent {
+  // One-liner: builds the model, the schema and the form.
+  protected readonly userForm = buildSignalForm(UserDtoEntity, {
+    id: 1,
+    name: 'John Doe',
+    addresses: [{ id: 1 }],
+    profile: { id: 10 },
+  });
+
+  // Or bring your own writable model signal:
+  private readonly model = signal(buildModel(UserDtoEntity, { id: 1 }));
+  protected readonly otherForm = form(this.model, buildSchema(UserDtoEntity));
+}
+```
+
+```html
+<input [control]="userForm.name" />
+@if (userForm.name().invalid()) {
+  <span>{{ userForm.name().errors()[0].message }}</span>
+}
+```
+
 ## Features
 
-- Automatic generation of reactive Angular forms from Focus4 entities
+- Automatic generation of reactive Angular forms (`FormGroup`) **and** signal forms (`FieldTree`) from Focus4 entities
 - Zod schema validation support
 - Custom component support (input and display components)
 - Complete TypeScript types with automatic inference
 - Support for nested objects, lists, and recursive lists
 - Required field validation
-- Synchronous and asynchronous validators
-- Compatible with Angular 21
+- Synchronous and asynchronous validators (reactive forms) and native signal form rules
+- Compatible with Angular 22

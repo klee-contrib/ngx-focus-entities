@@ -1,6 +1,7 @@
 import { Type } from '@angular/core';
 import { AsyncValidatorFn, ValidatorFn } from '@angular/forms';
-import { ZodType } from 'zod';
+import { SchemaOrSchemaFn } from '@angular/forms/signals';
+import { output, ZodType } from 'zod';
 /**
  * Définition d'un domaine.
  * Cette interface décrit la structure d'un domaine, qui peut être utilisé pour définir
@@ -55,6 +56,18 @@ declare global {
      * Un tableau de fonctions de validation qui sont exécutées de manière asynchrone pour valider la valeur du champ.
      */
     asyncValidators?: AsyncValidatorFn[];
+
+    /**
+     * Règles de formulaire signal (`@angular/forms/signals`) additionnelles pour le champ.
+     * Il s'agit d'un `Schema` ou d'une fonction de schéma appliqués au chemin du champ lors de la
+     * construction du formulaire via `buildSignalForm`/`buildSchema`. Elles permettent de déclarer,
+     * au niveau du domaine, des règles natives des formulaires signal (`min`, `max`, `pattern`,
+     * `validate`, `disabled`, etc.), en complément du schéma `zod`.
+     *
+     * C'est l'équivalent, pour les formulaires signal, de la propriété `validators` utilisée par les
+     * formulaires réactifs.
+     */
+    signalRules?: SchemaOrSchemaFn<output<S>>;
 
     /**
      * Composant personnalisé pour le champ.

@@ -4,6 +4,7 @@ import { buildForm } from './form-builder';
 
 import {
   e,
+  Entity,
   entity,
   FieldEntry,
   ListEntry,
@@ -37,7 +38,7 @@ export const UtilisateurDtoEntity = entity({
   adresss: e.list(AdressDtoEntity),
 });
 
-export interface UtilisateurDtoEntityType {
+export interface UtilisateurDtoEntityType extends Entity {
   id: FieldEntry<typeof DO_ID>;
   nom: FieldEntry<typeof DO_LIBELLE_100>;
   parents: RecursiveListEntry;
@@ -45,11 +46,11 @@ export interface UtilisateurDtoEntityType {
   profil: ObjectEntry<ProfilDtoEntityType>;
 }
 
-export interface ProfilDtoEntityType {
+export interface ProfilDtoEntityType extends Entity {
   id: FieldEntry<typeof DO_ID>;
 }
 
-export interface AdressDtoEntityType {
+export interface AdressDtoEntityType extends Entity {
   id: FieldEntry<typeof DO_ID>;
 }
 
