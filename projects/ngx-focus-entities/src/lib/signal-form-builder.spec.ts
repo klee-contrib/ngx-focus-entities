@@ -8,13 +8,9 @@ import { domain } from './domain-builder';
 import { buildModel, buildSchema, buildSignalForm } from './signal-form-builder';
 import { EntityToModel, EntityToSignalForm } from './types/signal-form';
 
-const DO_ID = domain({
-  schema: z.number().int().positive(),
-});
+const DO_ID = domain(z.number().int().positive());
 
-const DO_LIBELLE_100 = domain({
-  schema: z.string().max(100),
-});
+const DO_LIBELLE_100 = domain(z.string().max(100));
 
 const ProfilDtoEntity = entity({
   id: e.field(DO_ID, (b) => b.label('profil.profil.id').defaultValue(10)),
@@ -43,7 +39,7 @@ describe('buildModel', () => {
     });
     it('initializes fields without default to null (never undefined)', () => {
       expect(model.id).toBeNull();
-      expect(model.nom).toBeNull();
+      expect(model.nom).toBe('');
     });
     it('initializes lists as empty arrays', () => {
       expect(model.adresss).toBeInstanceOf(Array);

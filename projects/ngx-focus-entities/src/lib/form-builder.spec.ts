@@ -13,14 +13,9 @@ import {
 } from '@focus4/entities';
 import z from 'zod';
 import { domain } from './domain-builder';
-const DO_ID = domain({
-  schema: z.number().int().positive(),
-});
+const DO_ID = domain(z.number().int().positive());
 
-const DO_LIBELLE_100 = domain({
-  schema: z.string().max(100),
-  validators: [Validators.max(100)],
-});
+const DO_LIBELLE_100 = domain(z.string().max(100), { validators: [Validators.max(100)] });
 
 export const ProfilDtoEntity = entity({
   id: e.field(DO_ID, (b) => b.label('profil.profil.id').defaultValue(10)),

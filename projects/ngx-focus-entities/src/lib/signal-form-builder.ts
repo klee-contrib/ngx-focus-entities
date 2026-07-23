@@ -12,7 +12,7 @@ import {
   SchemaOrSchemaFn,
   validate,
 } from '@angular/forms/signals';
-import { Entity, EntityToType, FieldEntry } from '@focus4/entities';
+import { Entity, EntityToType, FieldEntry, isStringSchema } from '@focus4/entities';
 import { ZodType } from 'zod';
 import './types/domain';
 import { EntityToModel } from './types/signal-form';
@@ -51,22 +51,21 @@ export function buildModel<E extends Entity>(
     switch (field.type) {
       case 'list':
         // Liste d'entités : un tableau de modèles.
-        model[key] = (((value as any)?.[key] as any[]) ?? []).map((v) =>
-          buildModel(field.entity, v),
-        );
+        model[key] = ((value?.[key] as any[]) ?? []).map((v) => buildModel(field.entity, v));
         break;
       case 'recursive-list':
         // Liste récursive : un tableau de modèles de l'entité elle-même.
-        model[key] = (((value as any)?.[key] as any[]) ?? []).map((v) => buildModel(entity, v));
+        model[key] = ((value?.[key] as any[]) ?? []).map((v) => buildModel(entity, v));
         break;
       case 'object':
         // Objet imbriqué : on construit récursivement le modèle.
-        model[key] = buildModel(field.entity, (value as any)?.[key]);
+        model[key] = buildModel(field.entity, value?.[key]);
         break;
       default:
         // Champ simple : valeur fournie, sinon valeur par défaut du domaine, sinon `null`.
         // On évite `undefined` : un champ `undefined` n'est pas matérialisé dans le `FieldTree`.
-        model[key] = (value as any)?.[key] ?? field.defaultValue ?? null;
+        model[key] =
+          value?.[key] ?? field.defaultValue ?? (isStringSchema(field.domain.schema) ? '' : null);
     }
   }
 
@@ -155,15 +154,15 @@ export function buildSignalForm<E extends Entity>(
 ): FieldTree<EntityToModel<E>> | FieldTree<EntityToModel<E>[]> {
   // Cas d'un formulaire de type liste : le modèle est un tableau et le schéma s'applique à chaque élément.
   if (Array.isArray(entity)) {
-    const model = signal(buildModel(entity as [E], value as EntityToType<E>[]));
-    const itemSchema = buildSchema((entity as E[])[0]);
+    const model = signal(buildModel(entity, value as EntityToType<E>[]));
+    const itemSchema = buildSchema(entity[0]);
     const arraySchema: SchemaFn<EntityToModel<E>[]> = (path: any) =>
       applyEach(path, itemSchema as any);
     return buildFormFrom(model, arraySchema, options);
   }
 
-  const model = signal(buildModel(entity as E, value as EntityToType<E>));
-  return buildFormFrom(model, buildSchema(entity as E), options);
+  const model = signal(buildModel(entity, value as EntityToType<E>));
+  return buildFormFrom(model, buildSchema(entity), options);
 }
 
 /** Appelle `form` avec ou sans options selon leur présence, pour respecter les surcharges. */

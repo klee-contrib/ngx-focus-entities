@@ -1,12 +1,7 @@
 import { FieldTree } from '@angular/forms/signals';
-import {
-  Entity,
-  FieldEntry,
-  ListEntry,
-  ObjectEntry,
-  RecursiveListEntry,
-} from '@focus4/entities';
+import { Entity, FieldEntry, ListEntry, ObjectEntry, RecursiveListEntry } from '@focus4/entities';
 import './domain';
+import { ZodType } from 'zod';
 
 /**
  * @description Transforme une entité en type de données ("modèle") d'un formulaire signal.
@@ -17,15 +12,17 @@ import './domain';
  * un champ dont la valeur est `undefined` n'est en effet pas matérialisé dans le `FieldTree`.
  */
 export type EntityToModel<E extends Entity> = {
-  -readonly [P in keyof E]: E[P] extends FieldEntry
-    ? NonNullable<E[P]['fieldType']> | null // Champ simple : valeur, ou `null` lorsqu'elle est vide.
-    : E[P] extends ObjectEntry<infer OE extends Entity>
-      ? EntityToModel<OE> // Objet imbriqué.
-      : E[P] extends ListEntry<infer LE extends Entity>
-        ? EntityToModel<LE>[] // Liste d'entités.
-        : E[P] extends RecursiveListEntry
-          ? EntityToModel<E>[] // Liste récursive.
-          : never;
+  -readonly [P in keyof E]: E[P] extends FieldEntry<Domain<ZodType<string>>>
+    ? NonNullable<E[P]['fieldType']>
+    : E[P] extends FieldEntry
+      ? NonNullable<E[P]['fieldType']> | null // Champ simple : valeur, ou `null` lorsqu'elle est vide.
+      : E[P] extends ObjectEntry<infer OE extends Entity>
+        ? EntityToModel<OE> // Objet imbriqué.
+        : E[P] extends ListEntry<infer LE extends Entity>
+          ? EntityToModel<LE>[] // Liste d'entités.
+          : E[P] extends RecursiveListEntry
+            ? EntityToModel<E>[] // Liste récursive.
+            : never;
 };
 
 /**
