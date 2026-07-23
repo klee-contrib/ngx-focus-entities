@@ -1,6 +1,6 @@
 {
   "name": "ngx-focus-entities",
-  "version": "22.0.0",
+  "version": "22.0.1",
   "author": {
     "email": "gilderic.deruette@kleegroup.com",
     "name": "Gildéric Deruette"
@@ -38,7 +38,7 @@
     "@angular/core": "22.0.7",
     "@angular/forms": "22.0.7",
     "@angular/platform-browser": "22.0.7",
-    "@focus4/entities": "12.10.3",
+    "@focus4/entities": "12.13.0",
     "tslib": "2.3.0"
   },
   "devDependencies": {
