@@ -120,16 +120,24 @@ export function buildSchema<E extends Entity>(entity: E): Schema<EntityToModel<E
         default: {
           // Champ simple : validateurs déduits du domaine.
           const fieldEntry = field as FieldEntry;
-          if (fieldEntry.isRequired) {
-            required(path[key]);
-          }
-          bindDomainValidation(path[key], fieldEntry.domain);
+          applyValidators(fieldEntry, path, key);
         }
       }
     }
   });
 
   return cachedSchema as Schema<EntityToModel<E>>;
+}
+
+export function applyValidators<E>(
+  fieldEntry: FieldEntry<any, any, boolean>,
+  path: any,
+  key: Extract<keyof E, string>,
+) {
+  if (fieldEntry.isRequired) {
+    required(path[key]);
+  }
+  applyDomainValidators(path[key], fieldEntry.domain);
 }
 
 /**
@@ -144,38 +152,62 @@ export function buildSchema<E extends Entity>(entity: E): Schema<EntityToModel<E
  *               Si l'entité est une liste, le formulaire est un `FieldTree` de tableau.
  * @param value Valeurs initiales optionnelles du formulaire.
  * @param options Options de la fonction `form` (`injector`, `name`, etc.).
+ * @param schemaOrFn Schéma (ou fonction de schéma) additionnel appliqué à la racine du formulaire,
+ *                   après le schéma déduit de l'entité. Permet de déclarer des validateurs customs
+ *                   (`validate`, `required`, `disabled`, validation croisée entre champs, etc.) dès
+ *                   la création du formulaire.
  * @returns Un `FieldTree` représentant le formulaire signal construit à partir de l'entité.
  */
 export function buildSignalForm<E extends Entity>(
   entity: [E],
   value?: EntityToPartialType<E>[],
   options?: FormOptions<EntityToModel<E>[]>,
+  schemaOrFn?: SchemaOrSchemaFn<EntityToModel<E>[]>,
 ): FieldTree<EntityToModel<E>[]>;
 export function buildSignalForm<E extends Entity>(
   entity: E,
   value?: EntityToPartialType<E>,
   options?: FormOptions<EntityToModel<E>>,
+  schemaOrFn?: SchemaOrSchemaFn<EntityToModel<E>>,
 ): FieldTree<EntityToModel<E>>;
 export function buildSignalForm<E extends Entity>(
   entity: E | [E],
   value?: EntityToPartialType<E> | EntityToPartialType<E>[],
   options?: FormOptions<any>,
+  schemaOrFn?: SchemaOrSchemaFn<any>,
 ): FieldTree<EntityToModel<E>> | FieldTree<EntityToModel<E>[]> {
   // Cas d'un formulaire de type liste : le modèle est un tableau et le schéma s'applique à chaque élément.
   if (Array.isArray(entity)) {
     const model = signal(buildModel(entity, value as EntityToPartialType<E>[]));
     const itemSchema = buildSchema(entity[0]);
-    const arraySchema: SchemaFn<EntityToModel<E>[]> = (path: any) =>
+    const arraySchema: SchemaFn<EntityToModel<E>[]> = (path: any) => {
       applyEach(path, itemSchema as any);
+      // Le schéma custom s'applique à la racine du tableau : à lui d'utiliser `applyEach`
+      // s'il doit cibler chaque élément.
+      if (schemaOrFn) {
+        apply(path, schemaOrFn as any);
+      }
+    };
     return buildFormFrom(model, arraySchema, options);
   }
 
   const model = signal(buildModel(entity, value as EntityToPartialType<E>));
-  return buildFormFrom(model, buildSchema(entity), options);
+  const entitySchema = buildSchema(entity);
+  if (!schemaOrFn) {
+    return buildFormFrom(model, entitySchema, options);
+  }
+
+  // Le schéma de l'entité est appliqué en premier, puis le schéma custom : les règles des deux
+  // schémas se cumulent sur les champs qu'ils ciblent.
+  const combinedSchema: SchemaFn<EntityToModel<E>> = (path: any) => {
+    apply(path, entitySchema as any);
+    apply(path, schemaOrFn as any);
+  };
+  return buildFormFrom(model, combinedSchema, options);
 }
 
 /** Appelle `form` avec ou sans options selon leur présence, pour respecter les surcharges. */
-function buildFormFrom<T>(
+export function buildFormFrom<T>(
   model: WritableSignal<T>,
   schemaOrFn: SchemaOrSchemaFn<T>,
   options?: FormOptions<T>,
@@ -188,7 +220,7 @@ function buildFormFrom<T>(
  * - le schéma `zod` est validé lorsqu'une valeur non vide est renseignée ;
  * - les `signalRules` éventuelles du domaine sont appliquées via `apply`.
  */
-function bindDomainValidation(path: any, domain: Domain<ZodType>): void {
+export function applyDomainValidators(path: any, domain: Domain<ZodType>): void {
   const schema = domain.schema;
   if (schema) {
     validate(path, (ctx: any) => {

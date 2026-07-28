@@ -119,13 +119,17 @@ Three utilities are provided:
   `required` validator (when the field is mandatory), the domain's `zod` schema validation, and the
   domain's optional `signalRules`. Nested objects, lists, and recursive lists are handled
   recursively (via `apply`/`applyEach`).
-- `buildSignalForm(entity, value?, options?)`: combines `buildModel` and `buildSchema` into a single
-  call to `form`, and returns a `FieldTree`. Must be called within an injection context, or provide
-  an `injector` through the `options`.
+- `buildSignalForm(entity, value?, options?, schemaOrFn?)`: combines `buildModel` and `buildSchema`
+  into a single call to `form`, and returns a `FieldTree`. Must be called within an injection
+  context, or provide an `injector` through the `options`. The optional `schemaOrFn` (a `Schema` or a
+  schema function) is applied to the root of the form **after** the schema deduced from the entity,
+  which lets you declare custom validators (`validate`, `required`, `disabled`, cross-field
+  validation, etc.) right when the form is created. For a list entity, `schemaOrFn` is bound to the
+  root of the array: use `applyEach` inside it to target each item.
 
 ```ts
 import { Component, signal } from '@angular/core';
-import { form } from '@angular/forms/signals';
+import { form, validate } from '@angular/forms/signals';
 import { buildModel, buildSchema, buildSignalForm } from 'ngx-focus-entities';
 import { UserDtoEntity } from './user';
 
@@ -141,6 +145,15 @@ export class UserComponent {
     profile: { id: 10 },
   });
 
+  // With custom validators, on top of the ones deduced from the entity:
+  protected readonly checkedForm = buildSignalForm(UserDtoEntity, { id: 1 }, undefined, (p) => {
+    validate(p.name, ({ value, valueOf }) =>
+      valueOf(p.profile.id) === 10 && !value()
+        ? { kind: 'nameRequired', message: 'Name is required for this profile' }
+        : null,
+    );
+  });
+
   // Or bring your own writable model signal:
   private readonly model = signal(buildModel(UserDtoEntity, { id: 1 }));
   protected readonly otherForm = form(this.model, buildSchema(UserDtoEntity));
@@ -150,7 +163,7 @@ export class UserComponent {
 ```html
 <input [control]="userForm.name" />
 @if (userForm.name().invalid()) {
-  <span>{{ userForm.name().errors()[0].message }}</span>
+<span>{{ userForm.name().errors()[0].message }}</span>
 }
 ```
 

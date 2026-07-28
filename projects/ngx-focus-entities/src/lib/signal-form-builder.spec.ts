@@ -1,11 +1,12 @@
-import { signal } from '@angular/core';
+import { Injector, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { form } from '@angular/forms/signals';
-import { e, entity, EntityToPartialType } from '@focus4/entities';
+import { applyEach, form, required, schema, validate } from '@angular/forms/signals';
+import { e, entity } from '@focus4/entities';
 import { describe, expect, it } from 'vitest';
 import z from 'zod';
 import { domain } from './domain-builder';
 import { buildModel, buildSchema, buildSignalForm } from './signal-form-builder';
+import { EntityToModel } from './types/signal-form';
 
 const DO_ID = domain(z.number().int().positive());
 
@@ -149,6 +150,52 @@ describe('buildSchema / buildSignalForm', () => {
   });
 });
 
+describe('buildSignalForm with a custom schema', () => {
+  it('applies a custom schema function on top of the entity schema', () => {
+    const f = TestBed.runInInjectionContext(() =>
+      buildSignalForm(UtilisateurDtoEntity, { id: 1, nom: 'Jean' }, undefined, (p) => {
+        validate(p.nom, ({ value }) =>
+          value() === 'Jean' ? { kind: 'nomInterdit', message: 'Nom interdit' } : null,
+        );
+      }),
+    );
+    expect(f.nom().errors().some((error) => error.kind === 'nomInterdit')).toBe(true);
+  });
+
+  it('keeps the validators deduced from the entity', () => {
+    const f = TestBed.runInInjectionContext(() =>
+      buildSignalForm(UtilisateurDtoEntity, { nom: 'a'.repeat(101) }, undefined, (p) => {
+        required(p.nom);
+      }),
+    );
+    // Validateur custom.
+    expect(f.nom().errors().some((error) => error.kind === 'required')).toBe(false);
+    // Validateurs de l'entité toujours présents.
+    expect(f.nom().errors().some((error) => error.kind === 'formatError')).toBe(true);
+    expect(f.id().errors().some((error) => error.kind === 'required')).toBe(true);
+  });
+
+  it('accepts a cached schema and a cross-field validation', () => {
+    const customSchema = schema<EntityToModel<typeof UtilisateurDtoEntity>>((p) => {
+      validate(p.nom, ({ value, valueOf }) =>
+        valueOf(p.id) === 1 && !value() ? { kind: 'nomRequis', message: 'Nom requis' } : null,
+      );
+    });
+    const f = TestBed.runInInjectionContext(() =>
+      buildSignalForm(UtilisateurDtoEntity, { id: 1 }, undefined, customSchema),
+    );
+    expect(f.nom().errors().some((error) => error.kind === 'nomRequis')).toBe(true);
+  });
+
+  it('works alongside the form options', () => {
+    const injector = TestBed.inject(Injector);
+    const f = buildSignalForm(UtilisateurDtoEntity, { id: 1 }, { injector }, (p) => {
+      validate(p.id, () => ({ kind: 'idInterdit', message: 'Id interdit' }));
+    });
+    expect(f.id().errors().some((error) => error.kind === 'idInterdit')).toBe(true);
+  });
+});
+
 describe('buildSignalForm with array entity', () => {
   it('builds a field tree of an array', () => {
     const f = TestBed.runInInjectionContext(() =>
@@ -157,5 +204,22 @@ describe('buildSignalForm with array entity', () => {
     expect(f().value()).toHaveLength(2);
     expect(f[0].id().value()).toBe(2);
     expect(f[1].id().value()).toBe(3);
+  });
+
+  it('applies a custom schema at the root of the array', () => {
+    const f = TestBed.runInInjectionContext(() =>
+      buildSignalForm([UtilisateurDtoEntity], [{ id: 2 }], undefined, (p) => {
+        validate(p, ({ value }) =>
+          value().length < 2 ? { kind: 'tropPeuDElements', message: 'Au moins 2 éléments' } : null,
+        );
+        applyEach(p, (item) => {
+          validate(item.nom, () => ({ kind: 'nomInterdit', message: 'Nom interdit' }));
+        });
+      }),
+    );
+    expect(f().errors().some((error) => error.kind === 'tropPeuDElements')).toBe(true);
+    expect(f[0].nom().errors().some((error) => error.kind === 'nomInterdit')).toBe(true);
+    // Validateurs de l'entité toujours présents sur chaque élément.
+    expect(f[0].id().errors().some((error) => error.kind === 'required')).toBe(false);
   });
 });

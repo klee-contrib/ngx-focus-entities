@@ -121,13 +121,18 @@ Trois utilitaires sont fournis :
   chaque champ, il applique le validateur `required` (si le champ est obligatoire), la validation du
   schéma `zod` du domaine, et les `signalRules` éventuelles du domaine. Les objets imbriqués, listes
   et listes récursives sont gérés récursivement (via `apply`/`applyEach`).
-- `buildSignalForm(entity, value?, options?)` : combine `buildModel` et `buildSchema` en un seul
-  appel à `form`, et retourne un `FieldTree`. Doit être appelée dans un contexte d'injection, ou en
-  fournissant un `injector` via les `options`.
+- `buildSignalForm(entity, value?, options?, schemaOrFn?)` : combine `buildModel` et `buildSchema` en
+  un seul appel à `form`, et retourne un `FieldTree`. Doit être appelée dans un contexte d'injection,
+  ou en fournissant un `injector` via les `options`. Le paramètre optionnel `schemaOrFn` (un `Schema`
+  ou une fonction de schéma) est appliqué à la racine du formulaire **après** le schéma déduit de
+  l'entité : il permet de déclarer des validateurs customs (`validate`, `required`, `disabled`,
+  validation croisée entre champs, etc.) dès la création du formulaire. Pour une entité de type liste,
+  `schemaOrFn` est appliqué à la racine du tableau : utiliser `applyEach` à l'intérieur pour cibler
+  chaque élément.
 
 ```ts
 import { Component, signal } from '@angular/core';
-import { form } from '@angular/forms/signals';
+import { form, validate } from '@angular/forms/signals';
 import { buildModel, buildSchema, buildSignalForm } from 'ngx-focus-entities';
 import { UtilisateurDtoEntity } from './utilisateur';
 
@@ -143,6 +148,20 @@ export class UtilisateurComponent {
     profil: { id: 10 },
   });
 
+  // Avec des validateurs customs, en complément de ceux déduits de l'entité :
+  protected readonly formVerifie = buildSignalForm(
+    UtilisateurDtoEntity,
+    { id: 1 },
+    undefined,
+    (p) => {
+      validate(p.nom, ({ value, valueOf }) =>
+        valueOf(p.profil.id) === 10 && !value()
+          ? { kind: 'nomRequis', message: 'Le nom est requis pour ce profil' }
+          : null,
+      );
+    },
+  );
+
   // Ou en gérant soi-même le signal du modèle :
   private readonly model = signal(buildModel(UtilisateurDtoEntity, { id: 1 }));
   protected readonly autreForm = form(this.model, buildSchema(UtilisateurDtoEntity));
@@ -152,7 +171,7 @@ export class UtilisateurComponent {
 ```html
 <input [control]="utilisateurForm.nom" />
 @if (utilisateurForm.nom().invalid()) {
-  <span>{{ utilisateurForm.nom().errors()[0].message }}</span>
+<span>{{ utilisateurForm.nom().errors()[0].message }}</span>
 }
 ```
 
