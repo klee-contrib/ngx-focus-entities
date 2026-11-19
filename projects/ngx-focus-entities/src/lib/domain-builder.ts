@@ -1,4 +1,4 @@
-import z, { ZodType, ZodUnknown } from 'zod';
+import { unknown, ZodType, ZodUnknown } from 'zod';
 
 /**
  * Fonction générique pour créer ou modifier un domaine.
@@ -12,7 +12,7 @@ export function domain<
   InputComponent = any,
   DisplayComponent = any,
 >(
-  schema: S = z.unknown() as unknown as S,
+  schema: S = unknown() as unknown as S,
   options?: Omit<Partial<Domain<S, InputComponent, DisplayComponent>>, 'schema'>,
 ): Domain<S, InputComponent, DisplayComponent> {
   return {
